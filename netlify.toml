@@ -6,7 +6,12 @@
   to = "/.netlify/functions/create-checkout-session"
   status = 200
 
-[[redirects]] # New redirect for image conversion
-  from = "/convert-image"
-  to = "/.netlify/functions/convert-image"
+[[redirects]]
+  from = "/convert-image" # For image-to-image
+  to = "/.netlify/functions/convert-image" # Use the corrected version from last step
+  status = 200
+
+[[redirects]] # New redirect for image-to-pdf
+  from = "/image-to-pdf"
+  to = "/.netlify/functions/image-to-pdf"
   status = 200
