@@ -1,11 +1,12 @@
 [build]
-  # This tells Netlify where your functions are located
   functions = "netlify/functions"
 
-# This is a redirect rule.
-# It makes it so when your frontend calls `/create-checkout-session`,
-# Netlify internally routes that request to your serverless function.
 [[redirects]]
   from = "/create-checkout-session"
   to = "/.netlify/functions/create-checkout-session"
-  status = 200 # Use 200 for function calls (it's a rewrite, not a browser redirect)
+  status = 200
+
+[[redirects]] # New redirect for image conversion
+  from = "/convert-image"
+  to = "/.netlify/functions/convert-image"
+  status = 200
