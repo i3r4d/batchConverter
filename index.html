@@ -288,6 +288,15 @@
             color: #666;
             font-size: 0.9em;
         }
+
+        /* SEO Content Section Styles (moved from inline) */
+        .seo-content-section {
+            background: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 20px auto 0;
+            border-radius: 15px;
+        }
     </style>
 </head><body>
     <div class="container">
@@ -323,7 +332,7 @@
             
             <div class="file-list" id="fileList"></div>
             
-            <button class="convert-btn" id="convertBtn" onclick="showPayment()">
+            <button class="convert-btn" id="convertBtn">
                 Convert Files ($12.99 - Unlimited Forever)
             </button>
         </div>
@@ -366,7 +375,7 @@
     </div>
 
     <!-- SEO Content Section -->
-    <div style="background: white; padding: 40px; max-width: 800px; margin: 0 auto;">
+    <div class="seo-content-section">
         <h2>Free Batch File Converter - Convert Multiple Files Online</h2>
         <p>Need to convert multiple files at once? Our batch file converter handles unlimited file conversions in seconds. Convert PDF to JPG, PNG to PDF, DOCX to TXT, and over 20 file formats instantly.</p>
         
@@ -460,7 +469,6 @@
         
         function closePayment() {
             document.getElementById('paymentModal').style.display = 'none';
-            // Re-enable pay button if modal is closed without payment attempt or after failure
             const payButton = document.querySelector('.pay-btn');
             if (payButton) {
                 payButton.disabled = false;
@@ -469,6 +477,7 @@
         }
         
         function processPayment() {
+            // Ensure this is your Stripe Publishable Key (pk_test_... or pk_live_...)
             const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd'); 
 
             const payButton = document.querySelector('.pay-btn');
@@ -497,8 +506,11 @@
                 return stripe.redirectToCheckout({ sessionId: session.id });
             })
             .then(result => {
-                if (result.error) {
-                    alert(result.error.message); 
+                // This .then is only reached if redirectToCheckout itself has an issue before redirecting
+                // or if the user navigates back to this page before Stripe completes/cancels.
+                if (result && result.error) { 
+                    console.error('Stripe redirectToCheckout error:', result.error.message);
+                    alert('Could not redirect to Stripe: ' + result.error.message);
                     if (payButton) { 
                         payButton.disabled = false;
                         payButton.textContent = 'Pay Now & Start Converting';
@@ -514,25 +526,45 @@
                 }
             });
         }
-        
-        function enableUnlimitedAccess() {
-            // This function will eventually be triggered after successful payment confirmation (e.g., via webhook or success page)
-            document.getElementById('convertBtn').innerHTML = 'Convert Files Now (Unlimited Access)';
-            document.getElementById('convertBtn').onclick = function() {
-                if (selectedFiles.length === 0) {
-                    alert('Please select files to convert first!');
-                    return;
-                }
-                const outputFormat = document.getElementById('outputFormat').value;
-                if (!outputFormat) {
-                    alert('Please select an output format!');
-                    return;
-                }
-                // Placeholder for actual conversion logic
-                alert('File conversion feature will be fully implemented after successful payment confirmation and backend setup for conversion.');
-                // Here you would trigger the actual file conversion process.
-            };
+
+        function checkPaymentStatus() {
+            const convertBtn = document.getElementById('convertBtn');
+            if (!convertBtn) return; // Should not happen, but good guard
+
+            if (localStorage.getItem('hasPaidForBatchConvertPro') === 'true') {
+                convertBtn.innerHTML = 'Convert Files Now (Unlimited Access)';
+                convertBtn.onclick = function() {
+                    if (selectedFiles.length === 0) {
+                        alert('Please select files to convert first!');
+                        return;
+                    }
+                    const outputFormat = document.getElementById('outputFormat').value;
+                    if (!outputFormat) {
+                        alert('Please select an output format!');
+                        return;
+                    }
+                    alert('Initiating file conversion (feature in development)...');
+                    // TODO: Implement actual file conversion logic here
+                    // For example: startActualConversion(selectedFiles, outputFormat);
+                };
+            } else {
+                convertBtn.innerHTML = 'Convert Files ($12.99 - Unlimited Forever)';
+                convertBtn.onclick = showPayment; // Original function to show payment modal
+            }
         }
+
+        // Run checkPaymentStatus when the page is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            checkPaymentStatus();
+        });
+
+        // Also run checkPaymentStatus if the page is shown from bfcache (e.g., user clicks back button)
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                checkPaymentStatus();
+            }
+        });
+
     </script>
 </body>
 </html>
