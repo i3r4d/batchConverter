@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BatchConvert Pro - Unlimited Online File Converter</title>
-    <meta name="description" content="Securely convert multiple files at once with Batch Convert Pro. Fast, unlimited batch file converter for PDF, images (JPG, PNG, WebP), and more.">
+    <title>BatchConvert Pro - Premium Online File Converter</title>
+    <meta name="description" content="Experience premium, secure batch file conversions. Convert multiple images to JPG, PNG, WebP, PDF, and more with BatchConvert Pro. Unlimited, fast, and user-friendly.">
     
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -12,48 +12,44 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --font-primary: 'Inter', sans-serif;
-            --font-headings: 'Poppins', sans-serif;
+            --font-headings: 'Manrope', sans-serif; /* Changed from Poppins */
 
-            --color-background: #f4f7f9; /* Light gray background */
-            --color-surface: #ffffff;    /* White for cards/containers */
-            --color-surface-alt: #f8f9fa; /* Slightly off-white for alternate sections or item backgrounds */
-            --color-primary: #007aff;   /* A trustworthy blue for primary actions */
-            --color-primary-dark: #005ecb;
-            --color-secondary: #4A5568; /* Dark gray for secondary text */
-            --color-text: #2D3748;      /* Main text color - dark charcoal */
-            --color-headings: #1A202C;  /* Slightly darker for headings */
-            --color-border: #E2E8F0;    /* Light border color */
-            --color-success: #38A169;   /* Green for success */
-            --color-danger: #E53E3E;    /* Red for danger/remove */
-            --color-modal-overlay: rgba(0, 0, 0, 0.6);
+            --color-background: #f0f2f5; /* Softer light gray */
+            --color-surface: #ffffff;
+            --color-surface-alt: #f7fafc; 
+            --color-primary: #3B82F6;   /* A slightly more modern blue */
+            --color-primary-dark: #2563EB;
+            --color-secondary: #64748B; /* Slate gray */
+            --color-text: #1E293B;      /* Darker charcoal for better contrast */
+            --color-headings: #0F172A;  /* Even darker for headings */
+            --color-border: #CBD5E1;    /* Softer border */
+            --color-success: #10B981;   /* Tailwind green */
+            --color-danger: #EF4444;    /* Tailwind red */
+            --color-modal-overlay: rgba(15, 23, 42, 0.7); /* Darker overlay (from slate-900) */
             --color-icon-primary: var(--color-primary);
 
-            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
             
-            --border-radius-sm: 4px;
-            --border-radius-md: 8px;
-            --border-radius-lg: 12px;
+            --border-radius-sm: 0.25rem; /* 4px */
+            --border-radius-md: 0.5rem;  /* 8px */
+            --border-radius-lg: 0.75rem; /* 12px */
 
-            --space-xs: 4px;
-            --space-sm: 8px;
-            --space-md: 16px;
-            --space-lg: 24px;
-            --space-xl: 32px;
-            --space-xxl: 48px;
+            --space-xs: 0.25rem; /* 4px */
+            --space-sm: 0.5rem;  /* 8px */
+            --space-md: 1rem;    /* 16px */
+            --space-lg: 1.5rem;  /* 24px */
+            --space-xl: 2rem;    /* 32px */
+            --space-xxl: 3rem;   /* 48px */
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: var(--font-primary);
@@ -69,13 +65,30 @@
 
         .page-wrapper {
             width: 100%;
-            max-width: 900px; /* Main content width */
-            padding: var(--space-lg);
+            max-width: 1152px; /* xl tailwind size for overall content */
+            padding: var(--space-lg) var(--space-md); /* Horizontal padding on mobile */
+        }
+        @media (min-width: 640px) { .page-wrapper { padding: var(--space-xl); } }
+
+
+        .main-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: var(--space-xl);
+            align-items: flex-start; 
+        }
+        @media (min-width: 1024px) { /* Desktop: two columns */
+            .main-layout-grid {
+                grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Flexible columns */
+                gap: var(--space-xxl);
+            }
+            .features-column {
+                position: sticky;
+                top: var(--space-xl); 
+            }
         }
 
-        .container {
-            /* max-width: 700px; /* Converter box itself */
-            margin: 0 auto var(--space-xxl) auto;
+        .container { /* Main converter box */
             background: var(--color-surface);
             border-radius: var(--border-radius-lg);
             box-shadow: var(--shadow-lg);
@@ -84,372 +97,189 @@
         
         .header {
             background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-            padding: var(--space-xl) var(--space-lg);
+            padding: var(--space-xl);
             text-align: center;
             color: white;
         }
+        .header h1 { font-family: var(--font-headings); font-size: 2em; margin-bottom: var(--space-sm); font-weight: 800; }
+        .header p { font-size: 1.05em; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto; }
         
-        .header h1 {
-            font-family: var(--font-headings);
-            font-size: 2.25em;
-            margin-bottom: var(--space-sm);
-            font-weight: 700;
-        }
-        
-        .header p {
-            font-size: 1.125em;
-            opacity: 0.9;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .main-content {
-            padding: var(--space-xl);
-        }
+        .main-content { padding: var(--space-xl); }
         
         .upload-area {
-            border: 2px dashed var(--color-border);
-            border-radius: var(--border-radius-md);
-            padding: var(--space-xl) var(--space-lg);
-            text-align: center;
-            margin-bottom: var(--space-lg);
-            background-color: #fdfdfe; 
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
+            border: 2px dashed var(--color-border); border-radius: var(--border-radius-md); padding: var(--space-xl); text-align: center; margin-bottom: var(--space-lg); background-color: var(--color-surface-alt); transition: all 0.2s ease-in-out; cursor: pointer;
         }
-        
-        .upload-area:hover,
-        .upload-area.dragover {
-            border-color: var(--color-primary);
-            background-color: #eff6ff; 
-        }
-                
-        .upload-icon svg {
-            width: 40px;
-            height: 40px;
-            stroke: var(--color-icon-primary);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .upload-text {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: var(--color-headings);
-            margin-bottom: var(--space-xs);
-        }
-        
-        .upload-subtext {
-            color: var(--color-secondary);
-            font-size: 0.9em;
-        }
+        .upload-area:hover, .upload-area.dragover { border-color: var(--color-primary); background-color: #DBEAFE; /* light blue from Tailwind */ }
+        .upload-icon svg { width: 36px; height: 36px; stroke: var(--color-icon-primary); margin-bottom: var(--space-sm); }
+        .upload-text { font-size: 1.05em; font-weight: 600; color: var(--color-headings); margin-bottom: var(--space-xs); }
+        .upload-subtext { color: var(--color-secondary); font-size: 0.875em; }
         
         .file-input { display: none; }
-        
         .format-selector { margin-bottom: var(--space-lg); }
-        
-        .format-selector label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: var(--space-sm);
-            color: var(--color-headings);
-            font-size: 1em;
-        }
-        
-        .format-select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-md);
-            font-size: 1em;
-            background: var(--color-surface);
-            color: var(--color-text);
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234A5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 1em;
-        }
-        .format-select:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
-        }
+        .format-selector label { display: block; font-weight: 600; margin-bottom: var(--space-sm); color: var(--color-headings); font-size: 0.95em; }
+        .format-select { width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: 0.95em; background: var(--color-surface); color: var(--color-text); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.85em; }
+        .format-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Tailwind focus blue */ }
 
-        .file-list-header {
-            font-weight: 600;
-            color: var(--color-headings);
-            margin-bottom: var(--space-sm);
-            font-size: 0.95em;
-            padding-left: var(--space-xs);
-        }
-        .file-list { 
-            margin-bottom: var(--space-lg); 
-        }
-        .file-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--space-md);
-            background: var(--color-surface-alt);
-            border: 1px solid var(--color-border);
-            border-radius: var(--border-radius-md);
-            margin-bottom: var(--space-sm);
-            font-size: 0.9em;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.2s ease;
-        }
-        .file-item:hover {
-            box-shadow: var(--shadow-md);
-        }
-        .file-item-details {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            margin-right: var(--space-md);
-            overflow: hidden;
-        }
-        .file-name { 
-            font-weight: 600;
-            color: var(--color-headings); 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .file-size { 
-            color: var(--color-secondary); 
-            font-size: 0.85em; 
-        }
-        .remove-file {
-            background: var(--color-danger);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 500;
-            padding: var(--space-xs) var(--space-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease;
-            line-height: 1;
-        }
-        .remove-file svg {
-            width: 1em;
-            height: 1em;
-            stroke: white;
-            /* margin-right: var(--space-xs); Remove margin if only icon */
-        }
-        .remove-file:hover { 
-            background-color: #C53030; 
-        }
+        .file-list-header { font-weight: 600; color: var(--color-headings); margin-bottom: var(--space-sm); font-size: 0.9em; padding-left: var(--space-xs); }
+        .file-list { margin-bottom: var(--space-lg); }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: var(--space-sm) var(--space-md); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--border-radius-md); margin-bottom: var(--space-sm); font-size: 0.875em; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s ease; }
+        .file-item:hover { box-shadow: var(--shadow-md); }
+        .file-item-details { display: flex; flex-direction: column; flex-grow: 1; margin-right: var(--space-md); overflow: hidden; }
+        .file-name { font-weight: 500; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size { color: var(--color-secondary); font-size: 0.9em; }
+        .remove-file { background: transparent; color: var(--color-danger); border: none; border-radius: var(--border-radius-sm); cursor: pointer; font-size: 0.875em; font-weight: 500; padding: var(--space-xs); display: flex; align-items: center; justify-content: center; transition: color 0.2s ease; line-height: 1; }
+        .remove-file svg { width: 1.1em; height: 1.1em; stroke: currentColor; }
+        .remove-file:hover { color: #B91C1C; /* Darker red on hover */ }
         
-        .btn { 
-            display: inline-block;
-            width: 100%;
-            padding: 12px var(--space-lg);
-            border: none;
-            border-radius: var(--border-radius-md);
-            font-size: 1.05em;
-            font-weight: 600;
-            font-family: var(--font-primary);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s ease-in-out;
-            box-shadow: var(--shadow-sm);
-        }
+        .btn { display: inline-block; width: 100%; padding: 0.75rem var(--space-lg); border: 1px solid transparent; border-radius: var(--border-radius-md); font-size: 0.95em; font-weight: 600; font-family: var(--font-primary); cursor: pointer; text-align: center; transition: all 0.15s ease-in-out; box-shadow: var(--shadow-sm); }
         .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
         .btn:active { transform: translateY(0px); box-shadow: var(--shadow-sm); }
-        .btn:disabled { background-color: #CBD5E0 !important; color: #A0AEC0 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; }
-
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: white;
-        }
+        .btn:disabled { background-color: #D1D5DB !important; color: #6B7280 !important; cursor: not-allowed !important; box-shadow: none !important; transform: none !important; border-color: transparent !important;}
+        .btn-primary { background-color: var(--color-primary); color: white; }
         .btn-primary:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+        .btn-success { background-color: var(--color-success); color: white; }
+        .btn-success:hover:not(:disabled) { background-color: #059669; }
+        .btn-secondary { background-color: #E5E7EB; color: var(--color-headings); border-color: var(--color-border); } /* Light gray button */
+        .btn-secondary:hover:not(:disabled) { background-color: #D1D5DB; }
+        
+        .payment-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-modal-overlay); z-index: 1000; align-items: center; justify-content: center; padding: var(--space-md); }
+        .payment-modal.active { display: flex; }
+        .payment-content { background: var(--color-surface); padding: var(--space-xl); border-radius: var(--border-radius-lg); text-align: center; max-width: 400px; width: 100%; box-shadow: var(--shadow-lg); }
+        .payment-title { font-family: var(--font-headings); font-size: 1.4em; margin-bottom: var(--space-md); color: var(--color-headings); font-weight: 700; }
+        .price { font-size: 2.25em; color: var(--color-primary); font-weight: 800; margin-bottom: var(--space-xs); }
+        .price-subtext { color: var(--color-secondary); margin-bottom: var(--space-lg); font-size: 0.875em; }
+        .pay-btn { margin-bottom: var(--space-md); }
+        
+        .features-section-wrapper { background-color: transparent; border-radius: 0; box-shadow: none; padding: 0; margin-bottom: var(--space-xxl); }
+        /* If features are in a sidebar, they might not need their own card background */
+        /* .features-column .features-section-wrapper { background-color: var(--color-surface); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); padding: var(--space-xl); } */
 
-        .btn-success {
-            background-color: var(--color-success);
-            color: white;
-        }
-        .btn-success:hover:not(:disabled) { background-color: #2F855A; }
-        
-        .btn-secondary {
-            background-color: var(--color-secondary);
-            color: white;
-        }
-        .btn-secondary:hover:not(:disabled) { background-color: #2D3748; }
-        
-        .payment-modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--color-modal-overlay);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-md);
-        }
-        .payment-modal.active { display: flex; } /* Use class to show */
-        
-        .payment-content {
-            background: var(--color-surface);
-            padding: var(--space-xl);
-            border-radius: var(--border-radius-lg);
-            text-align: center;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: var(--shadow-lg);
-        }
-        .payment-title { font-family: var(--font-headings); font-size: 1.5em; margin-bottom: var(--space-md); color: var(--color-headings); font-weight: 700; }
-        .price { font-size: 2.5em; color: var(--color-primary); font-weight: 700; margin-bottom: var(--space-xs); }
-        .price-subtext { color: var(--color-secondary); margin-bottom: var(--space-lg); font-size: 0.9em; }
-        .pay-btn { margin-bottom: var(--space-md); } /* Applied .btn .btn-success in HTML */
-        
-        .features-section-wrapper { /* NEW WRAPPER for features */
-            background-color: var(--color-surface);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--space-xxl);
-            padding: var(--space-xl) 0;
-        }
-        .features .inner-container {
-            max-width: 800px; 
-            margin: 0 auto;
-            padding: 0 var(--space-lg);
-        }
-        .features h2 { font-family: var(--font-headings); text-align: center; margin-bottom: var(--space-lg); color: var(--color-headings); font-size: 2em; font-weight: 700; }
-        .feature-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-lg);
-        }
-        @media (min-width: 560px) { .feature-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-xl); }}
-        /* @media (min-width: 992px) { .feature-grid { grid-template-columns: repeat(4, 1fr); }} */ /* Uncomment if 4-across desired */
+        .features h2 { font-family: var(--font-headings); text-align: left; margin-bottom: var(--space-lg); color: var(--color-headings); font-size: 1.35em; font-weight: 700; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-sm); }
+        .feature-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-xl); }
+        /* Forcing single column for features if in sidebar */
+        /* @media (min-width: 560px) and (max-width: 1023px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } } */
 
-        .feature { text-align: center; padding: var(--space-md); }
-        .feature-icon svg { width: 40px; height: 40px; stroke: var(--color-icon-primary); margin-bottom: var(--space-md); }
-        .feature h3 { font-family: var(--font-headings); margin-bottom: var(--space-sm); color: var(--color-headings); font-size: 1.25em; font-weight: 600; }
-        .feature p { color: var(--color-secondary); font-size: 0.9em; line-height: 1.5; }
+        .feature { display: flex; align-items: flex-start; text-align: left; gap: var(--space-md); padding: 0; }
+        .feature-icon { flex-shrink: 0; margin-top: var(--space-xs); } /* Align icon slightly */
+        .feature-icon svg { width: 24px; height: 24px; stroke: var(--color-icon-primary); stroke-width: 2; }
+        .feature-text-content {}
+        .feature h3 { font-family: var(--font-headings); margin-bottom: var(--space-xs); color: var(--color-headings); font-size: 1em; font-weight: 700; }
+        .feature p { color: var(--color-secondary); font-size: 0.875em; line-height: 1.5; }
 
-        .seo-content-section {
-            background: var(--color-surface); padding: var(--space-xl) var(--space-lg); max-width: 100%; /* Takes full width of page-wrapper */ margin: 0 auto; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md);
-        }
+        .seo-content-section { background: var(--color-surface); padding: var(--space-xl); max-width: 100%; margin: 0 auto; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); }
         .seo-content-section h2, .seo-content-section h3 { font-family: var(--font-headings); color: var(--color-headings); margin-top: var(--space-md); margin-bottom: var(--space-sm); }
-        .seo-content-section h2 { font-size: 1.75em; }
-        .seo-content-section h3 { font-size: 1.35em; }
-        .seo-content-section p, .seo-content-section ul, .seo-content-section ol { margin-bottom: var(--space-md); line-height: 1.7; }
+        .seo-content-section h2 { font-size: 1.5em; }
+        .seo-content-section h3 { font-size: 1.2em; }
+        .seo-content-section p, .seo-content-section ul, .seo-content-section ol { margin-bottom: var(--space-md); line-height: 1.7; font-size: 0.95em; }
         .seo-content-section ul, .seo-content-section ol { margin-left: var(--space-lg); }
         .seo-content-section li { margin-bottom: var(--space-sm); }
         .seo-content-section em { font-style: italic; color: var(--color-secondary); font-size: 0.9em;}
-
     </style>
 </head>
 <body>
     <div class="page-wrapper">
-        <div class="container">
-            <div class="header">
-                <h1>BatchConvert Pro</h1>
-                <p>Instantly convert multiple files online. Unlimited use, totally secure, blazing fast.</p>
-            </div>
-            
-            <div class="main-content">
-                <div class="upload-area" id="uploadAreaTrigger" onclick="document.getElementById('fileInput').click()">
-                    <div class="upload-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2.1-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.2S3.7 5.4 3 8.5H1.8c-1.1 0-2.1.5-2.8 1.3-.7.8-1 1.7-1 2.7 0 2.2 1.8 4 4 4h13.4c1.5 0 2.8-.8 3.4-2.1zM12 12v9"></path><path d="M16 16l-4-4-4 4"></path></svg>
+        <div class="main-layout-grid">
+            <div class="converter-column">
+                <div class="container">
+                    <div class="header">
+                        <h1>BatchConvert Pro</h1>
+                        <p>Instantly convert multiple files online. Unlimited use, totally secure, blazing fast.</p>
                     </div>
-                    <div class="upload-text">Drop files here or click to browse</div>
-                    <div class="upload-subtext">Supports Images (JPG, PNG, WebP, etc.) & PDF</div>
+                    <div class="main-content">
+                        <div class="upload-area" id="uploadAreaTrigger" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.2 15c.7-1.2 1-2.5.7-3.9-.6-2.1-2.4-3.5-4.4-3.5h-1.2c-.7-3-3.2-5.2-6.2-5.2S3.7 5.4 3 8.5H1.8c-1.1 0-2.1.5-2.8 1.3-.7.8-1 1.7-1 2.7 0 2.2 1.8 4 4 4h13.4c1.5 0 2.8-.8 3.4-2.1zM12 12v9"></path><path d="M16 16l-4-4-4 4"></path></svg>
+                            </div>
+                            <div class="upload-text">Drop files here or click to browse</div>
+                            <div class="upload-subtext">Supports Images (JPG, PNG, WebP, etc.) & PDF from Image</div>
+                        </div>
+                        <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.tiff,.txt,.md,.csv,.json,.zip">
+                        <div class="format-selector">
+                            <label for="outputFormat">Convert selected files to:</label>
+                            <select id="outputFormat" class="format-select">
+                                <option value="">Select output format</option>
+                                <optgroup label="Images">
+                                    <option value="jpg">JPG</option>
+                                    <option value="png">PNG</option>
+                                    <option value="gif">GIF (Static)</option>
+                                    <option value="webp">WebP</option>
+                                    <option value="tiff">TIFF</option>
+                                </optgroup>
+                                <optgroup label="Documents">
+                                    <option value="pdf">PDF (from Image)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <h3 class="file-list-header" id="fileListHeader" style="display:none;">Selected Files:</h3>
+                        <div class="file-list" id="fileList"></div>
+                        <button class="btn btn-primary convert-btn" id="convertBtn"></button>
+                    </div>
                 </div>
-                
-                <input type="file" id="fileInput" class="file-input" multiple 
-                       accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.tiff,.txt,.md,.csv,.json,.zip">
-                
-                <div class="format-selector">
-                    <label for="outputFormat">Convert selected files to:</label>
-                    <select id="outputFormat" class="format-select">
-                        <option value="">Select output format</option>
-                        <optgroup label="Images">
-                            <option value="jpg">JPG</option>
-                            <option value="png">PNG</option>
-                            <option value="gif">GIF (Static)</option>
-                            <option value="webp">WebP</option>
-                            <option value="tiff">TIFF</option>
-                        </optgroup>
-                        <optgroup label="Documents">
-                            <option value="pdf">PDF (from Image)</option>
-                        </optgroup>
-                    </select>
-                </div>
-                
-                <h3 class="file-list-header" id="fileListHeader" style="display:none;">Selected Files:</h3>
-                <div class="file-list" id="fileList"></div>
-                
-                <button class="btn btn-primary convert-btn" id="convertBtn">
-                    <!-- Text and onclick set by checkPaymentStatus() -->
-                </button>
             </div>
-        </div> <!-- End .container -->
+            <div class="features-column">
+                <div class="features-section-wrapper">
+                    <div class="features">
+                        <!-- <div class="inner-container"> No longer needed if padding on wrapper -->
+                            <h2>Why BatchConvert Pro?</h2>
+                            <div class="feature-grid">
+                                <div class="feature">
+                                    <div class="feature-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                    </div>
+                                    <div class="feature-text-content">
+                                        <h3>Lightning Fast</h3>
+                                        <p>Optimized engine for rapid batch file conversions.</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <div class="feature-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                    </div>
+                                    <div class="feature-text-content">
+                                        <h3>Versatile Formats</h3>
+                                        <p>Supports key image formats and PDF creation.</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <div class="feature-icon">
+                                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    </div>
+                                    <div class="feature-text-content">
+                                        <h3>100% Secure</h3>
+                                        <p>Files are processed securely and deleted promptly.</p>
+                                    </div>
+                                </div>
+                                <div class="feature">
+                                    <div class="feature-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2Z"></path><path d="M12 12L16 10" opacity=".4"></path><path d="M12 12L12 7" opacity=".4"></path><path d="M12 12L7 10.5" opacity=".4"></path><path d="M12 12L14 15" opacity=".4"></path><path d="M12 12L9 15.5" opacity=".4"></path></svg>
+                                    </div>
+                                    <div class="feature-text-content">
+                                        <h3>Truly Unlimited</h3>
+                                        <p>One-time payment for endless file conversions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- </div> -->
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End .main-layout-grid -->
 
-        <div class="features-section-wrapper">
-            <div class="features">
-                <div class="inner-container">
-                    <h2>Why Choose BatchConvert Pro?</h2>
-                    <div class="feature-grid">
-                        <div class="feature">
-                            <div class="feature-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                            </div>
-                            <h3>Lightning Fast</h3>
-                            <p>Our optimized engine converts hundreds of files in seconds, not minutes.</p>
-                        </div>
-                        <div class="feature">
-                            <div class="feature-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
-                            </div>
-                            <h3>Versatile Formats</h3>
-                            <p>We support a wide range of image formats and PDF conversions.</p>
-                        </div>
-                        <div class="feature">
-                            <div class="feature-icon">
-                               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                            </div>
-                            <h3>100% Secure</h3>
-                            <p>Files are processed securely and automatically deleted post-conversion.</p>
-                        </div>
-                        <div class="feature">
-                            <div class="feature-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16.016 10.336a5.002 5.002 0 00-7.996-1.122A5.002 5.002 0 003 13.5a5 5 0 005 5h8.5a3.5 3.5 0 00.252-6.984zM11.5 14.564V19.5M8.5 16.5l3-3 3 3" opacity=".4"/><path d="M16.016 10.336a5.002 5.002 0 00-7.996-1.122A5.002 5.002 0 003 13.5a5 5 0 005 5h8.5a3.5 3.5 0 00.252-6.984zM11.5 14.564V19.5M8.5 16.5l3-3 3 3"/></svg>
-                            </div>
-                            <h3>Truly Unlimited</h3>
-                            <p>Convert as many files as you need, as often as you want. Forever.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- End .features-section-wrapper -->
-    
         <div class="payment-modal" id="paymentModal">
             <div class="payment-content">
                 <h2 class="payment-title">Unlock Unlimited Conversions</h2>
                 <div class="price">$12.99</div>
                 <div class="price-subtext">One-time payment • Lifetime access • No monthly fees</div>
                 <button class="btn btn-success pay-btn" onclick="processPayment()">Pay Now & Start Converting</button>
-                <button class="btn btn-secondary close-modal-btn" id="closeModalBtnJs" onclick="closePayment()">Maybe Later</button>
+                <button class="btn btn-secondary close-modal-btn" onclick="closePayment()">Maybe Later</button>
             </div>
         </div>
 
         <div class="seo-content-section">
             <h2>Advanced Batch File Converter for All Your Needs</h2>
             <p>BatchConvert Pro is your ultimate solution for converting multiple files online efficiently. Whether you need to convert images to JPG, PNG, WebP, or create PDFs from images, our tool handles it seamlessly. Experience unlimited batch conversions without compromising on speed or security. Our intuitive interface makes it easy to upload and convert hundreds of files simultaneously.</p>
-            
             <h3>Supported File Formats & Conversions</h3>
             <p>Currently, BatchConvert Pro excels at image conversions (JPG, PNG, GIF, WebP, TIFF to each other) and creating PDFs from various image formats. We are constantly working to expand our supported formats to include documents (DOCX, TXT), archives (ZIP), and more, all within our secure, high-performance batch processing engine. Our goal is to be the most comprehensive and user-friendly online batch converter.</p>
-            
             <h3>Why BatchConvert Pro Stands Out</h3>
             <ul>
                 <li><strong>Unlimited Conversions:</strong> No daily limits, no file count restrictions. Pay once, convert forever.</li>
@@ -458,7 +288,6 @@
                 <li><strong>Privacy Focused:</strong> Your files are automatically deleted from our servers after conversion.</li>
                 <li><strong>User-Friendly Design:</strong> A clean, modern interface that's easy to navigate and use.</li>
             </ul>
-            
             <h3>How to Convert Multiple Files with BatchConvert Pro</h3>
             <ol>
                 <li>Drag and drop your files into the upload area, or click to browse your computer.</li>
@@ -471,6 +300,8 @@
     </div> <!-- End .page-wrapper -->
 
     <script>
+        // --- JavaScript is IDENTICAL to the previous working version (with ZIP downloads) ---
+        // --- No functional JS changes are made in this UI update ---
         let selectedFiles = [];
         const convertBtn = document.getElementById('convertBtn'); 
         const paymentModal = document.getElementById('paymentModal');
@@ -482,17 +313,13 @@
         uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
         uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
         
-        function handleFiles(files) { 
-            for (let file of files) { selectedFiles.push(file); } 
-            updateFileList(); 
-        }
+        function handleFiles(files) { for (let file of files) { selectedFiles.push(file); } updateFileList(); }
         function updateFileList() { 
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = '';
             selectedFiles.forEach((file, index) => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'file-item';
-                // Updated file item structure for better styling
                 fileItem.innerHTML = `
                     <div class="file-item-details">
                         <span class="file-name" title="${file.name}">${file.name}</span>
@@ -504,7 +331,7 @@
                 `;
                 fileList.appendChild(fileItem);
             });
-            fileListHeader.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+            if (fileListHeader) fileListHeader.style.display = selectedFiles.length > 0 ? 'block' : 'none';
         }
         function removeFile(index) { selectedFiles.splice(index, 1); updateFileList(); }
         function formatFileSize(bytes) { if (bytes === 0) return '0 Bytes'; const k = 1024; const sizes = ['Bytes', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; }
@@ -513,10 +340,10 @@
             if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; } 
             const outputFormat = document.getElementById('outputFormat').value; 
             if (!outputFormat) { alert('Please select an output format!'); return; } 
-            paymentModal.classList.add('active');
+            if (paymentModal) paymentModal.classList.add('active');
         }
         function closePayment() { 
-            paymentModal.classList.remove('active');
+            if (paymentModal) paymentModal.classList.remove('active');
             const payButton = document.querySelector('.pay-btn'); 
             if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; } 
         }
@@ -619,10 +446,7 @@
             if (batchSummaryMessages.length > 0) { alert(`Batch Conversion Summary:\n${batchSummaryMessages.join('\n')}`); } 
             else if (failCount > 0 && successCount === 0) { alert(`All ${failCount} file(s) failed to convert.`); } 
             else if (successCount === 0 && failCount === 0 && selectedFiles.length > 0) { alert("No files were eligible for the selected conversion.");}
-            // else if (selectedFiles.length === 0) { /* Already handled by initial check */ }
-            // else { alert("Conversion process completed."); } // Avoid this if summary already shown
-
-
+            
             convertBtn.disabled = false;
             checkPaymentStatus();
         }
@@ -637,7 +461,12 @@
                 convertBtn.onclick = showPayment;
             }
         }
-        document.addEventListener('DOMContentLoaded', checkPaymentStatus);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize payment modal JS variable after DOM is loaded
+            // paymentModal = document.getElementById('paymentModal'); // Already global
+            // fileListHeader = document.getElementById('fileListHeader'); // Already global
+            checkPaymentStatus();
+        });
         window.addEventListener('pageshow', (event) => { if (event.persisted) { checkPaymentStatus(); } });
     </script>
 </body>
