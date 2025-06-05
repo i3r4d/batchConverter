@@ -3,17 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Batch Convert Files - Unlimited File Converter Online</title>
-    <meta name="description" content="Convert multiple files at once. Fast, unlimited batch file converter for PDF, images, documents, and more. No limits, no waiting.">
+    <title>Batch Convert Pro - Unlimited Online File Converter</title> <!-- Slightly tweaked title -->
+    <meta name="description" content="Securely convert multiple files at once with Batch Convert Pro. Fast, unlimited batch file converter for PDF, images (JPG, PNG, WebP), and more."> <!-- Tweaked description -->
+    
     <script src="https://js.stripe.com/v3/"></script>
-    <!-- Include JSZip from a CDN for simplicity without a build step -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- FileSaver.js from CDN for saveAs function -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* ... (your existing CSS styles remain the same) ... */
-        /* Styles from previous version */
+        :root {
+            --font-primary: 'Inter', sans-serif;
+            --font-headings: 'Poppins', sans-serif;
+
+            --color-background: #f4f7f9; /* Light gray background */
+            --color-surface: #ffffff;    /* White for cards/containers */
+            --color-primary: #007aff;   /* A trustworthy blue for primary actions */
+            --color-primary-dark: #005ecb;
+            --color-secondary: #4A5568; /* Dark gray for secondary text */
+            --color-text: #2D3748;      /* Main text color - dark charcoal */
+            --color-headings: #1A202C;  /* Slightly darker for headings */
+            --color-border: #E2E8F0;    /* Light border color */
+            --color-success: #38A169;   /* Green for success */
+            --color-danger: #E53E3E;    /* Red for danger/remove */
+            --color-modal-overlay: rgba(0, 0, 0, 0.6);
+
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            --border-radius-sm: 4px;
+            --border-radius-md: 8px;
+            --border-radius-lg: 12px;
+
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -21,169 +54,184 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: var(--font-primary);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
+            padding: var(--space-lg);
         }
         
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin: var(--space-lg) auto;
+            background: var(--color-surface);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            padding: 30px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            padding: var(--space-xl) var(--space-lg);
             text-align: center;
             color: white;
         }
         
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-family: var(--font-headings);
+            font-size: 2.25em; /* 36px */
+            margin-bottom: var(--space-sm);
             font-weight: 700;
         }
         
         .header p {
-            font-size: 1.2em;
+            font-size: 1.125em; /* 18px */
             opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .main-content {
-            padding: 40px;
+            padding: var(--space-xl);
         }
         
         .upload-area {
-            border: 3px dashed #4facfe;
-            border-radius: 10px;
-            padding: 40px;
+            border: 2px dashed var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: var(--space-xl);
             text-align: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
+            margin-bottom: var(--space-lg);
+            background-color: #fdfdfe; /* Slightly off-white */
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
         }
         
-        .upload-area:hover {
-            border-color: #00f2fe;
-            background: rgba(79, 172, 254, 0.05);
-        }
-        
+        .upload-area:hover,
         .upload-area.dragover {
-            border-color: #00f2fe;
-            background: rgba(79, 172, 254, 0.1);
+            border-color: var(--color-primary);
+            background-color: #eff6ff; /* Light blue tint */
         }
-        
-        .upload-icon {
-            font-size: 3em;
-            color: #4facfe;
-            margin-bottom: 20px;
+                
+        .upload-icon svg { /* Style for SVG icons */
+            width: 48px;
+            height: 48px;
+            stroke: var(--color-primary);
+            margin-bottom: var(--space-md);
         }
         
         .upload-text {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--color-headings);
+            margin-bottom: var(--space-xs);
         }
         
         .upload-subtext {
-            color: #666;
-            font-size: 1em;
+            color: var(--color-secondary);
+            font-size: 0.9em;
         }
         
-        .file-input {
-            display: none;
-        }
+        .file-input { display: none; }
         
-        .format-selector {
-            margin-bottom: 30px;
-        }
+        .format-selector { margin-bottom: var(--space-lg); }
         
         .format-selector label {
             display: block;
             font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
+            margin-bottom: var(--space-sm);
+            color: var(--color-headings);
+            font-size: 1em;
         }
         
         .format-select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
             font-size: 1em;
-            background: white;
+            background: var(--color-surface);
+            color: var(--color-text);
+            appearance: none; /* Basic reset */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234A5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
         }
-        
         .format-select:focus {
             outline: none;
-            border-color: #4facfe;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
         }
         
-        .file-list {
-            margin-bottom: 30px;
-        }
+        .file-list { margin-bottom: var(--space-lg); }
         
         .file-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        
-        .file-name {
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .file-size {
-            color: #666;
+            padding: var(--space-sm) var(--space-md);
+            background: #f9fafb; /* Lighter than upload area */
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            margin-bottom: var(--space-sm);
             font-size: 0.9em;
         }
+        .file-name { font-weight: 500; color: var(--color-text); }
+        .file-size { color: var(--color-secondary); font-size: 0.9em; }
         
         .remove-file {
-            background: #ff4757;
-            color: white;
+            background: transparent;
+            color: var(--color-danger);
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--border-radius-sm);
             cursor: pointer;
-            font-size: 0.8em;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
         }
+        .remove-file:hover { background-color: #fee2e2; /* Light red tint */ }
         
-        .remove-file:hover {
-            background: #ff3838;
-        }
-        
-        .convert-btn {
+        .btn { /* Base button style */
+            display: inline-block;
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
+            padding: 12px var(--space-lg);
             border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
+            border-radius: var(--border-radius-md);
+            font-size: 1.05em;
             font-weight: 600;
+            font-family: var(--font-primary);
             cursor: pointer;
-            transition: transform 0.2s;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            box-shadow: var(--shadow-sm);
         }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0px); box-shadow: var(--shadow-sm); }
+        .btn:disabled { background-color: #CBD5E0; color: #A0AEC0; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+
+        .btn-success {
+            background-color: var(--color-success);
+            color: white;
+        }
+        .btn-success:hover:not(:disabled) { background-color: #2F855A; /* Darker green */ }
         
-        .convert-btn:hover {
-            transform: translateY(-2px);
+        .btn-secondary {
+            background-color: var(--color-secondary);
+            color: white;
         }
-        
-        .convert-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-secondary:hover:not(:disabled) { background-color: #2D3748; /* Darker gray */ }
+
+        /* Convert button specifically */
+        .convert-btn { /* Inherits from .btn and .btn-primary */ }
         
         .payment-modal {
             display: none;
@@ -192,145 +240,145 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: var(--color-modal-overlay);
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-md);
         }
+        .payment-modal.active { display: flex; } /* Use class to show */
         
         .payment-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
+            background: var(--color-surface);
+            padding: var(--space-xl);
+            border-radius: var(--border-radius-lg);
             text-align: center;
-            max-width: 500px;
-            width: 90%;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
         }
         
         .payment-title {
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            color: #333;
+            font-family: var(--font-headings);
+            font-size: 1.5em; /* 24px */
+            margin-bottom: var(--space-md);
+            color: var(--color-headings);
+            font-weight: 700;
         }
         
         .price {
-            font-size: 2.5em;
-            color: #4facfe;
+            font-size: 2.5em; /* 40px */
+            color: var(--color-primary);
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: var(--space-xs);
         }
         
         .price-subtext {
-            color: #666;
-            margin-bottom: 30px;
+            color: var(--color-secondary);
+            margin-bottom: var(--space-lg);
+            font-size: 0.9em;
         }
         
-        .pay-btn {
-            width: 100%;
-            padding: 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-        
-        .pay-btn:hover {
-            background: #218838;
-        }
-         .pay-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .close-modal {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        .pay-btn { /* Inherits from .btn and .btn-success */ margin-bottom: var(--space-md); }
+        .close-modal-btn { /* Inherits from .btn and .btn-secondary */ }
         
         .features {
-            background: #f8f9fa;
-            padding: 30px;
-            margin-top: 30px;
+            background: transparent; /* Remove old background */
+            padding: var(--space-xl) 0; /* Adjust padding */
+            border-top: 1px solid var(--color-border);
         }
         
         .features h2 {
+            font-family: var(--font-headings);
             text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: var(--space-lg);
+            color: var(--color-headings);
+            font-size: 1.75em; /* 28px */
+            font-weight: 700;
         }
         
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--space-lg);
         }
         
         .feature {
             text-align: center;
-            padding: 20px;
+            padding: var(--space-md);
+            /* background: var(--color-surface); Optional: if you want cards for features */
+            /* border-radius: var(--border-radius-md); */
+            /* box-shadow: var(--shadow-sm); */
         }
         
-        .feature-icon {
-            font-size: 2em;
-            color: #4facfe;
-            margin-bottom: 10px;
+        .feature-icon svg {
+            width: 36px;
+            height: 36px;
+            stroke: var(--color-primary);
+            margin-bottom: var(--space-sm);
         }
         
         .feature h3 {
-            margin-bottom: 10px;
-            color: #333;
+            font-family: var(--font-headings);
+            margin-bottom: var(--space-sm);
+            color: var(--color-headings);
+            font-size: 1.15em;
+            font-weight: 600;
         }
         
         .feature p {
-            color: #666;
+            color: var(--color-secondary);
             font-size: 0.9em;
+            line-height: 1.5;
         }
 
         .seo-content-section {
-            background: white;
-            padding: 40px;
+            background: var(--color-surface);
+            padding: var(--space-xl);
             max-width: 800px;
-            margin: 20px auto 0;
-            border-radius: 15px;
+            margin: var(--space-xl) auto 0;
+            border-radius: var(--border-radius-lg); /* Consistent with container */
+            box-shadow: var(--shadow-md);
+        }
+        .seo-content-section h2, .seo-content-section h3 {
+            font-family: var(--font-headings);
+            color: var(--color-headings);
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+         .seo-content-section p {
+            margin-bottom: var(--space-md);
+            line-height: 1.7;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ... (header and other HTML unchanged) ... -->
         <div class="header">
             <h1>BatchConvert Pro</h1>
-            <p>Convert Multiple Files Instantly - No Limits, No Waiting</p>
+            <p>Instantly convert multiple files online. Unlimited use, totally secure, blazing fast.</p>
         </div>
         
         <div class="main-content">
-            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                <div class="upload-icon">📁</div>
+            <div class="upload-area" id="uploadAreaTrigger" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path><polyline points="16 16 12 12 8 16"></polyline></svg>
+                </div>
                 <div class="upload-text">Drop files here or click to browse</div>
-                <div class="upload-subtext">Support for PDF, JPG, PNG, GIF, WebP, TIFF & more</div>
+                <div class="upload-subtext">Supports Images (JPG, PNG, WebP, etc.) & PDF</div>
             </div>
             
             <input type="file" id="fileInput" class="file-input" multiple 
                    accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.tiff,.txt,.md,.csv,.json,.zip">
             
             <div class="format-selector">
-                <label for="outputFormat">Convert to:</label>
+                <label for="outputFormat">Convert selected files to:</label>
                 <select id="outputFormat" class="format-select">
                     <option value="">Select output format</option>
                     <optgroup label="Images">
                         <option value="jpg">JPG</option>
                         <option value="png">PNG</option>
-                        <option value="gif">GIF</option>
+                        <option value="gif">GIF (Static)</option>
                         <option value="webp">WebP</option>
                         <option value="tiff">TIFF</option>
                     </optgroup>
@@ -342,71 +390,99 @@
             
             <div class="file-list" id="fileList"></div>
             
-            <button class="convert-btn" id="convertBtn">
+            <button class="btn btn-primary convert-btn" id="convertBtn">
                 <!-- Text and onclick set by checkPaymentStatus() -->
             </button>
         </div>
         
         <div class="features">
-            <h2>Why Choose BatchConvert Pro?</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Convert hundreds of files in seconds, not minutes</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🔄</div>
-                    <h3>Many Formats</h3>
-                    <p>Images, basic PDFs - we support them. More coming!</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🔒</div>
-                    <h3>100% Secure</h3>
-                    <p>Your files are processed securely and deleted after conversion</p>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">♾️</div>
-                    <h3>No Limits</h3>
-                    <p>Unlimited files, unlimited conversions, forever</p>
+             <div style="max-width: 800px; margin: 0 auto;"> <!-- Inner container for features content -->
+                <h2>Why Choose BatchConvert Pro?</h2>
+                <div class="feature-grid">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <h3>Lightning Fast</h3>
+                        <p>Our optimized engine converts hundreds of files in seconds, not minutes.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                        </div>
+                        <h3>Versatile Formats</h3>
+                        <p>We support a wide range of image formats and PDF conversions.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        </div>
+                        <h3>100% Secure</h3>
+                        <p>Files are processed securely and automatically deleted post-conversion.</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 22a10 10 0 0 0 10-10h-10v10z"></path><path d="M2 12a10 10 0 0 0 10 10V12H2z"></path><path d="M22 12a10 10 0 0 0-10-10v10h10z"></path></svg>                        
+                        </div>
+                        <h3>Truly Unlimited</h3>
+                        <p>Convert as many files as you need, as often as you want. Forever.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="payment-modal" id="paymentModal">
+    <div class="payment-modal" id="paymentModal"> <!-- Add class 'active' to show -->
         <div class="payment-content">
             <h2 class="payment-title">Unlock Unlimited Conversions</h2>
             <div class="price">$12.99</div>
             <div class="price-subtext">One-time payment • Lifetime access • No monthly fees</div>
-            <button class="pay-btn" onclick="processPayment()">Pay Now & Start Converting</button>
-            <button class="close-modal" onclick="closePayment()">Maybe Later</button>
+            <button class="btn btn-success pay-btn" onclick="processPayment()">Pay Now & Start Converting</button>
+            <button class="btn btn-secondary close-modal-btn" onclick="closePayment()">Maybe Later</button>
         </div>
     </div>
 
     <div class="seo-content-section">
-        <h2>Free Batch File Converter - Convert Multiple Files Online</h2>
-        <p>Need to convert multiple files at once? Our batch file converter handles unlimited file conversions in seconds. Convert PDF to JPG, PNG to PDF, DOCX to TXT, and over 20 file formats instantly.</p>
-        <h3>Supported File Formats</h3>
-        <p>Convert between PDF, JPG, JPEG, PNG, GIF, DOCX, DOC, TXT, MP4, AVI, MOV, ZIP, RAR, and many more formats. Our converter supports batch processing for images, documents, videos, and archives.</p>
-        <h3>Why Use Our Batch Converter?</h3>
-        <p>Unlike other online converters with file limits and watermarks, our tool offers unlimited conversions with no restrictions. Convert hundreds of files simultaneously without quality loss or file size limits.</p>
-        <h3>How to Convert Multiple Files</h3>
-        <p>Simply drag and drop your files, select your desired output format, and click convert. Our batch file converter processes all files simultaneously, saving you hours of manual work.</p>
+        <h2>Advanced Batch File Converter for All Your Needs</h2>
+        <p>BatchConvert Pro is your ultimate solution for converting multiple files online efficiently. Whether you need to convert images to JPG, PNG, WebP, or create PDFs from images, our tool handles it seamlessly. Experience unlimited batch conversions without compromising on speed or security. Our intuitive interface makes it easy to upload and convert hundreds of files simultaneously.</p>
+        
+        <h3>Supported File Formats & Conversions</h3>
+        <p>Currently, BatchConvert Pro excels at image conversions (JPG, PNG, GIF, WebP, TIFF to each other) and creating PDFs from various image formats. We are constantly working to expand our supported formats to include documents (DOCX, TXT), archives (ZIP), and more, all within our secure, high-performance batch processing engine. Our goal is to be the most comprehensive and user-friendly online batch converter.</p>
+        
+        <h3>Why BatchConvert Pro Stands Out</h3>
+        <ul>
+            <li><strong>Unlimited Conversions:</strong> No daily limits, no file count restrictions. Pay once, convert forever.</li>
+            <li><strong>Speed & Efficiency:</strong> Optimized for fast processing of large batches of files.</li>
+            <li><strong>High-Quality Output:</strong> Conversions maintain the highest possible quality.</li>
+            <li><strong>Privacy Focused:</strong> Your files are automatically deleted from our servers after conversion.</li>
+            <li><strong>User-Friendly Design:</strong> A clean, modern interface that's easy to navigate and use.</li>
+        </ul>
+        
+        <h3>How to Convert Multiple Files with BatchConvert Pro</h3>
+        <ol>
+            <li>Drag and drop your files into the upload area, or click to browse your computer.</li>
+            <li>Select your desired output format from the dropdown menu.</li>
+            <li>Click the "Convert Files" button. (A one-time payment unlocks unlimited access).</li>
+            <li>Your converted files will be bundled into a ZIP for easy download.</li>
+        </ol>
+        <p><em>Keywords: batch image converter, convert multiple files to pdf, online png to jpg batch, webp converter bulk, unlimited file conversion, secure file converter online.</em></p>
     </div>
 
     <script>
-        // Ensure JSZip and FileSaver are loaded from CDN before this script runs
-        // or handle their absence gracefully.
+        // JS is largely the same as your last working version for functionality.
+        // The main changes here are CSS and minor HTML structure for icons.
+        // Ensure JSZip and FileSaver are loaded from CDN.
 
         let selectedFiles = [];
         const convertBtn = document.getElementById('convertBtn'); 
+        const paymentModal = document.getElementById('paymentModal');
         
         document.getElementById('fileInput').addEventListener('change', function(e) { handleFiles(e.target.files); });
         const uploadArea = document.querySelector('.upload-area');
         uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
         uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
         uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+        
         function handleFiles(files) { for (let file of files) { selectedFiles.push(file); } updateFileList(); }
         function updateFileList() { 
             const fileList = document.getElementById('fileList');
@@ -425,8 +501,17 @@
         function removeFile(index) { selectedFiles.splice(index, 1); updateFileList(); }
         function formatFileSize(bytes) { if (bytes === 0) return '0 Bytes'; const k = 1024; const sizes = ['Bytes', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; }
         
-        function showPayment() { if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; } const outputFormat = document.getElementById('outputFormat').value; if (!outputFormat) { alert('Please select an output format!'); return; } document.getElementById('paymentModal').style.display = 'block'; }
-        function closePayment() { document.getElementById('paymentModal').style.display = 'none'; const payButton = document.querySelector('.pay-btn'); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; } }
+        function showPayment() { 
+            if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; } 
+            const outputFormat = document.getElementById('outputFormat').value; 
+            if (!outputFormat) { alert('Please select an output format!'); return; } 
+            paymentModal.classList.add('active'); // Use class to show
+        }
+        function closePayment() { 
+            paymentModal.classList.remove('active'); // Use class to hide
+            const payButton = document.querySelector('.pay-btn'); 
+            if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; } 
+        }
         
         function processPayment() {
             const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd');
@@ -439,37 +524,23 @@
             .catch(error => { console.error('Error in processPayment:', error); alert('Payment processing failed: ' + error.message); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; }});
         }
 
-        function readFileAsBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = (error) => reject(error);
-            });
-        }
+        function readFileAsBase64(file) { /* ... unchanged ... */ return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onloadend = () => resolve(reader.result); reader.onerror = (error) => reject(error); }); }
 
-        async function processSingleImageConversion(file, outputFormat) {
-            try {
+        async function processSingleImageConversion(file, outputFormat) { /* ... unchanged, returns object ... */ 
+             try {
                 const imageBase64 = await readFileAsBase64(file);
                 const response = await fetch('/convert-image', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ imageBase64, outputFormat, inputFileName: file.name })
                 });
-                if (!response.ok) { 
-                    const errData = await response.json().catch(() => ({ error: "Failed to parse server error."})); 
-                    throw new Error(errData.error || `Image conversion error for ${file.name}: ${response.status}`); 
-                }
+                if (!response.ok) { const errData = await response.json().catch(() => ({ error: "Failed to parse server error."})); throw new Error(errData.error || `Image conversion error for ${file.name}: ${response.status}`); }
                 const result = await response.json();
-                // Instead of direct download, return the data for zipping
                 return { status: 'fulfilled', fileName: result.fileName, mimeType: result.mimeType, data: result.data };
-            } catch (error) {
-                console.error(`Error converting ${file.name} to ${outputFormat}:`, error);
-                return { status: 'rejected', originalFileName: file.name, reason: error.message };
-            }
+            } catch (error) { console.error(`Error converting ${file.name} to ${outputFormat}:`, error); return { status: 'rejected', originalFileName: file.name, reason: error.message }; }
         }
 
-        async function processSingleImageToPdfConversion(file) {
+        async function processSingleImageToPdfConversion(file) { /* ... unchanged, returns object ... */ 
             try {
                 const imageBase64 = await readFileAsBase64(file);
                 const response = await fetch('/image-to-pdf', { 
@@ -477,23 +548,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ imageBase64, inputFileName: file.name })
                 });
-                if (!response.ok) { 
-                    const errData = await response.json().catch(() => ({ error: "Failed to parse server error."})); 
-                    throw new Error(errData.error || `Image-to-PDF conversion error for ${file.name}: ${response.status}`); 
-                }
+                if (!response.ok) { const errData = await response.json().catch(() => ({ error: "Failed to parse server error."})); throw new Error(errData.error || `Image-to-PDF conversion error for ${file.name}: ${response.status}`); }
                 const result = await response.json();
-                // Instead of direct download, return the data for zipping
                 return { status: 'fulfilled', fileName: result.fileName, mimeType: result.mimeType, data: result.data };
-            } catch (error) {
-                console.error(`Error converting ${file.name} to PDF:`, error);
-                return { status: 'rejected', originalFileName: file.name, reason: error.message };
-            }
+            } catch (error) { console.error(`Error converting ${file.name} to PDF:`, error); return { status: 'rejected', originalFileName: file.name, reason: error.message }; }
         }
 
-        async function handlePaidConversion() {
+        async function handlePaidConversion() { /* ... mostly unchanged logic, ensures JSZip and saveAs are checked ... */ 
             if (!convertBtn) return;
             if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; }
-            
             const outputFormatValue = document.getElementById('outputFormat').value;
             if (!outputFormatValue) { alert('Please select an output format!'); return; }
 
@@ -502,7 +565,8 @@
 
             const conversionPromises = [];
             const targetFormat = outputFormatValue.toLowerCase();
-            const successfullyConvertedFilesData = []; // To store data for zipping
+            const successfullyConvertedFilesData = [];
+            const batchSummaryMessages = [];
 
             const imageInputTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/tiff', 'image/svg+xml'];
             const imageOutputTargetsForImageFunction = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff']; 
@@ -514,24 +578,16 @@
                         conversionPromises.push(processSingleImageConversion(fileToConvert, targetFormat));
                     } else if (targetFormat === 'pdf') {
                         conversionPromises.push(processSingleImageToPdfConversion(fileToConvert));
-                    } else {
-                        conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported output '${targetFormat}' for this image.`}));
-                    }
-                } else {
-                    conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported input type '${inputFileType}'.`}));
-                }
+                    } else { conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported output '${targetFormat}' for this image.`})); }
+                } else { conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported input type '${inputFileType}'.`})); }
             }
 
             const results = await Promise.allSettled(conversionPromises);
-            
-            let successCount = 0;
-            let failCount = 0;
-            let batchSummaryMessages = [];
+            let successCount = 0; let failCount = 0;
 
             results.forEach(result => {
                 if (result.status === 'fulfilled' && result.value.status === 'fulfilled') {
-                    successCount++;
-                    successfullyConvertedFilesData.push(result.value); // Store {fileName, mimeType, data}
+                    successCount++; successfullyConvertedFilesData.push(result.value);
                 } else {
                     failCount++;
                     const fileName = result.value?.originalFileName || (result.reason?.originalFileName || 'Unknown file');
@@ -543,52 +599,29 @@
 
             if (successfullyConvertedFilesData.length > 0) {
                 if (typeof JSZip === "undefined" || typeof saveAs === "undefined") {
-                    alert("Error: JSZip or FileSaver library not loaded. Cannot create ZIP. Individual downloads not implemented as fallback yet.");
-                    successfullyConvertedFilesData.forEach(fileData => { // Fallback to individual if JSZip fails to load
-                        const link = document.createElement('a');
-                        link.href = `data:${fileData.mimeType};base64,${fileData.data}`;
-                        link.download = fileData.fileName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        batchSummaryMessages.push(`Downloaded ${fileData.fileName} individually (ZIP creation failed).`);
-                    });
-
+                    alert("Error: ZIP library not loaded. Attempting individual downloads.");
+                    successfullyConvertedFilesData.forEach(fileData => { const link = document.createElement('a'); link.href = `data:${fileData.mimeType};base64,${fileData.data}`; link.download = fileData.fileName; document.body.appendChild(link); link.click(); document.body.removeChild(link); });
+                    batchSummaryMessages.unshift("Individual downloads initiated (ZIP creation library failed).");
                 } else {
                     const zip = new JSZip();
-                    successfullyConvertedFilesData.forEach(fileData => {
-                        // JSZip expects the actual binary data, not the base64 string directly for {base64: true} unless it's a base64 *string*
-                        // The 'data' is already a base64 string from our functions
-                        zip.file(fileData.fileName, fileData.data, { base64: true });
-                    });
-                    
+                    successfullyConvertedFilesData.forEach(fileData => { zip.file(fileData.fileName, fileData.data, { base64: true }); });
                     try {
                         const zipBlob = await zip.generateAsync({ type: "blob" });
-                        saveAs(zipBlob, "converted_files.zip"); // From FileSaver.js
+                        saveAs(zipBlob, "converted_files.zip"); 
                         batchSummaryMessages.unshift(`${successCount} file(s) converted and zipped successfully!`);
                     } catch (zipError) {
                         console.error("Error generating ZIP:", zipError);
-                        batchSummaryMessages.unshift("Error creating ZIP file. Individual downloads attempted instead.");
-                        // Fallback to individual downloads if zipping fails
-                        successfullyConvertedFilesData.forEach(fileData => {
-                             const link = document.createElement('a');
-                            link.href = `data:${fileData.mimeType};base64,${fileData.data}`;
-                            link.download = fileData.fileName;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        });
+                        batchSummaryMessages.unshift("Error creating ZIP file. Attempting individual downloads.");
+                        successfullyConvertedFilesData.forEach(fileData => { const link = document.createElement('a'); link.href = `data:${fileData.mimeType};base64,${fileData.data}`; link.download = fileData.fileName; document.body.appendChild(link); link.click(); document.body.removeChild(link);});
                     }
                 }
             }
             
-            if (batchSummaryMessages.length > 0) {
-                 alert(`Batch Conversion Summary:\n${batchSummaryMessages.join('\n')}`);
-            } else if (failCount > 0 && successCount === 0) {
-                 alert(`All ${failCount} file(s) failed to convert.`);
-            } else if (successCount === 0 && failCount === 0) {
-                alert("No files were processed or eligible for conversion.");
-            }
+            if (batchSummaryMessages.length > 0) { alert(`Batch Conversion Summary:\n${batchSummaryMessages.join('\n')}`); } 
+            else if (failCount > 0 && successCount === 0) { alert(`All ${failCount} file(s) failed to convert.`); } 
+            else if (successCount === 0 && failCount === 0 && selectedFiles.length > 0) { alert("No files were eligible for the selected conversion.");}
+            else if (selectedFiles.length === 0) { /* Already handled */ }
+            else { alert("Conversion process completed."); }
 
 
             convertBtn.disabled = false;
@@ -601,7 +634,7 @@
                 convertBtn.innerHTML = 'Convert Files Now (Unlimited Access)';
                 convertBtn.onclick = handlePaidConversion; 
             } else {
-                convertBtn.innerHTML = 'Convert Files ($12.99 - Unlimited Forever)';
+                convertBtn.innerHTML = 'Convert Files ($12.99 - Unlock Unlimited)'; // Updated text slightly
                 convertBtn.onclick = showPayment;
             }
         }
