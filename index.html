@@ -505,7 +505,7 @@
         }
         
         function processPayment() {
-            const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd');
+            const stripe = Stripe('pk_live_51RWdDYG7Nhle0D1QIEqomJC2sbuz722j10dcglaobHoanBW6lohcT5MZ2XlpySjWzCyD1ZpjcWDe3E7DxWM1MBfO00DAO7M3EY');
             const payButton = document.querySelector('.pay-btn');
             if (payButton) { payButton.disabled = true; payButton.textContent = 'Processing...'; }
             fetch('/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }})
