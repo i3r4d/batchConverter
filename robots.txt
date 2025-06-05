@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /success.html
+Disallow: /cancel.html
+Disallow: /.netlify/ # Disallow direct access to Netlify specific paths
+Disallow: /functions/ # Disallow direct access to functions if they were ever exposed differently
+
+# Allow specific function endpoints if they were meant to be GETtable and indexable (unlikely for these)
+# Allow: /.netlify/functions/some-public-function 
+
+Sitemap: https://batchconverter.netlify.app/sitemap.xml
