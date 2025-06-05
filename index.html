@@ -17,20 +17,20 @@
     <style>
         :root {
             --font-primary: 'Inter', sans-serif;
-            --font-headings: 'Manrope', sans-serif; /* Changed from Poppins */
+            --font-headings: 'Manrope', sans-serif;
 
-            --color-background: #f0f2f5; /* Softer light gray */
+            --color-background: #f0f2f5;
             --color-surface: #ffffff;
             --color-surface-alt: #f7fafc; 
-            --color-primary: #3B82F6;   /* A slightly more modern blue */
+            --color-primary: #3B82F6;
             --color-primary-dark: #2563EB;
-            --color-secondary: #64748B; /* Slate gray */
-            --color-text: #1E293B;      /* Darker charcoal for better contrast */
-            --color-headings: #0F172A;  /* Even darker for headings */
-            --color-border: #CBD5E1;    /* Softer border */
-            --color-success: #10B981;   /* Tailwind green */
-            --color-danger: #EF4444;    /* Tailwind red */
-            --color-modal-overlay: rgba(15, 23, 42, 0.7); /* Darker overlay (from slate-900) */
+            --color-secondary: #64748B;
+            --color-text: #1E293B;
+            --color-headings: #0F172A;
+            --color-border: #CBD5E1;
+            --color-success: #10B981;
+            --color-danger: #EF4444;
+            --color-modal-overlay: rgba(15, 23, 42, 0.7);
             --color-icon-primary: var(--color-primary);
 
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -65,8 +65,8 @@
 
         .page-wrapper {
             width: 100%;
-            max-width: 1152px; /* xl tailwind size for overall content */
-            padding: var(--space-lg) var(--space-md); /* Horizontal padding on mobile */
+            max-width: 1152px; 
+            padding: var(--space-lg) var(--space-md);
         }
         @media (min-width: 640px) { .page-wrapper { padding: var(--space-xl); } }
 
@@ -77,9 +77,9 @@
             gap: var(--space-xl);
             align-items: flex-start; 
         }
-        @media (min-width: 1024px) { /* Desktop: two columns */
+        @media (min-width: 1024px) { 
             .main-layout-grid {
-                grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Flexible columns */
+                grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); 
                 gap: var(--space-xxl);
             }
             .features-column {
@@ -88,7 +88,7 @@
             }
         }
 
-        .container { /* Main converter box */
+        .container { 
             background: var(--color-surface);
             border-radius: var(--border-radius-lg);
             box-shadow: var(--shadow-lg);
@@ -109,7 +109,7 @@
         .upload-area {
             border: 2px dashed var(--color-border); border-radius: var(--border-radius-md); padding: var(--space-xl); text-align: center; margin-bottom: var(--space-lg); background-color: var(--color-surface-alt); transition: all 0.2s ease-in-out; cursor: pointer;
         }
-        .upload-area:hover, .upload-area.dragover { border-color: var(--color-primary); background-color: #DBEAFE; /* light blue from Tailwind */ }
+        .upload-area:hover, .upload-area.dragover { border-color: var(--color-primary); background-color: #DBEAFE; }
         .upload-icon svg { width: 36px; height: 36px; stroke: var(--color-icon-primary); margin-bottom: var(--space-sm); }
         .upload-text { font-size: 1.05em; font-weight: 600; color: var(--color-headings); margin-bottom: var(--space-xs); }
         .upload-subtext { color: var(--color-secondary); font-size: 0.875em; }
@@ -118,7 +118,7 @@
         .format-selector { margin-bottom: var(--space-lg); }
         .format-selector label { display: block; font-weight: 600; margin-bottom: var(--space-sm); color: var(--color-headings); font-size: 0.95em; }
         .format-select { width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--color-border); border-radius: var(--border-radius-md); font-size: 0.95em; background: var(--color-surface); color: var(--color-text); appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 0.85em; }
-        .format-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Tailwind focus blue */ }
+        .format-select:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
 
         .file-list-header { font-weight: 600; color: var(--color-headings); margin-bottom: var(--space-sm); font-size: 0.9em; padding-left: var(--space-xs); }
         .file-list { margin-bottom: var(--space-lg); }
@@ -129,7 +129,7 @@
         .file-size { color: var(--color-secondary); font-size: 0.9em; }
         .remove-file { background: transparent; color: var(--color-danger); border: none; border-radius: var(--border-radius-sm); cursor: pointer; font-size: 0.875em; font-weight: 500; padding: var(--space-xs); display: flex; align-items: center; justify-content: center; transition: color 0.2s ease; line-height: 1; }
         .remove-file svg { width: 1.1em; height: 1.1em; stroke: currentColor; }
-        .remove-file:hover { color: #B91C1C; /* Darker red on hover */ }
+        .remove-file:hover { color: #B91C1C; }
         
         .btn { display: inline-block; width: 100%; padding: 0.75rem var(--space-lg); border: 1px solid transparent; border-radius: var(--border-radius-md); font-size: 0.95em; font-weight: 600; font-family: var(--font-primary); cursor: pointer; text-align: center; transition: all 0.15s ease-in-out; box-shadow: var(--shadow-sm); }
         .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
@@ -139,7 +139,7 @@
         .btn-primary:hover:not(:disabled) { background-color: var(--color-primary-dark); }
         .btn-success { background-color: var(--color-success); color: white; }
         .btn-success:hover:not(:disabled) { background-color: #059669; }
-        .btn-secondary { background-color: #E5E7EB; color: var(--color-headings); border-color: var(--color-border); } /* Light gray button */
+        .btn-secondary { background-color: #E5E7EB; color: var(--color-headings); border-color: var(--color-border); }
         .btn-secondary:hover:not(:disabled) { background-color: #D1D5DB; }
         
         .payment-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-modal-overlay); z-index: 1000; align-items: center; justify-content: center; padding: var(--space-md); }
@@ -151,29 +151,76 @@
         .pay-btn { margin-bottom: var(--space-md); }
         
         .features-section-wrapper { background-color: transparent; border-radius: 0; box-shadow: none; padding: 0; margin-bottom: var(--space-xxl); }
-        /* If features are in a sidebar, they might not need their own card background */
         /* .features-column .features-section-wrapper { background-color: var(--color-surface); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); padding: var(--space-xl); } */
 
         .features h2 { font-family: var(--font-headings); text-align: left; margin-bottom: var(--space-lg); color: var(--color-headings); font-size: 1.35em; font-weight: 700; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-sm); }
         .feature-grid { display: grid; grid-template-columns: 1fr; gap: var(--space-xl); }
-        /* Forcing single column for features if in sidebar */
-        /* @media (min-width: 560px) and (max-width: 1023px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } } */
 
         .feature { display: flex; align-items: flex-start; text-align: left; gap: var(--space-md); padding: 0; }
-        .feature-icon { flex-shrink: 0; margin-top: var(--space-xs); } /* Align icon slightly */
+        .feature-icon { flex-shrink: 0; margin-top: var(--space-xs); } 
         .feature-icon svg { width: 24px; height: 24px; stroke: var(--color-icon-primary); stroke-width: 2; }
         .feature-text-content {}
         .feature h3 { font-family: var(--font-headings); margin-bottom: var(--space-xs); color: var(--color-headings); font-size: 1em; font-weight: 700; }
         .feature p { color: var(--color-secondary); font-size: 0.875em; line-height: 1.5; }
 
-        .seo-content-section { background: var(--color-surface); padding: var(--space-xl); max-width: 100%; margin: 0 auto; border-radius: var(--border-radius-lg); box-shadow: var(--shadow-md); }
-        .seo-content-section h2, .seo-content-section h3 { font-family: var(--font-headings); color: var(--color-headings); margin-top: var(--space-md); margin-bottom: var(--space-sm); }
-        .seo-content-section h2 { font-size: 1.5em; }
-        .seo-content-section h3 { font-size: 1.2em; }
-        .seo-content-section p, .seo-content-section ul, .seo-content-section ol { margin-bottom: var(--space-md); line-height: 1.7; font-size: 0.95em; }
-        .seo-content-section ul, .seo-content-section ol { margin-left: var(--space-lg); }
-        .seo-content-section li { margin-bottom: var(--space-sm); }
-        .seo-content-section em { font-style: italic; color: var(--color-secondary); font-size: 0.9em;}
+        /* --- Styles for SEO Content Section --- */
+        .seo-content-section {
+            background: var(--color-surface);
+            padding: var(--space-xl); /* Consistent padding */
+            max-width: 100%; 
+            margin: var(--space-xxl) auto var(--space-xxl) auto; /* Top and bottom margin */
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+        .seo-content-section h2 {
+            font-family: var(--font-headings);
+            color: var(--color-headings);
+            font-size: 1.75em; /* Prominent section title */
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-lg); 
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .seo-content-section h3 {
+            font-family: var(--font-headings);
+            color: var(--color-headings);
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-top: var(--space-xl);
+            margin-bottom: var(--space-md); /* Increased margin for better spacing */
+        }
+        .seo-content-section p, 
+        .seo-content-section ul, 
+        .seo-content-section ol {
+            margin-bottom: var(--space-md);
+            line-height: 1.7;
+            font-size: 0.95em;
+            color: var(--color-text); /* Explicitly set text color */
+        }
+        .seo-content-section ul, 
+        .seo-content-section ol {
+            padding-left: var(--space-xl); /* Use padding for indentation, adjust if needed */
+            margin-left: 0; 
+        }
+        .seo-content-section li {
+            margin-bottom: var(--space-sm);
+        }
+        .seo-content-section strong { /* Style for bold text within this section */
+            font-weight: 600; /* Semi-bold */
+            color: var(--color-headings);
+        }
+        .seo-content-section .keywords-list { /* Style for the keywords paragraph */
+            margin-top: var(--space-xl);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border);
+            font-size: 0.875em;
+            color: var(--color-secondary);
+            text-align: center;
+        }
+        .seo-content-section .keywords-list em { /* Emphasized text within keywords list */
+            font-style: normal; /* Removing italic as visual hierarchy is handled by other styles */
+        }
     </style>
 </head>
 <body>
@@ -219,7 +266,6 @@
             <div class="features-column">
                 <div class="features-section-wrapper">
                     <div class="features">
-                        <!-- <div class="inner-container"> No longer needed if padding on wrapper -->
                             <h2>Why BatchConvert Pro?</h2>
                             <div class="feature-grid">
                                 <div class="feature">
@@ -259,7 +305,6 @@
                                     </div>
                                 </div>
                             </div>
-                        <!-- </div> -->
                     </div>
                 </div>
             </div>
@@ -295,7 +340,7 @@
                 <li>Click the "Convert Files" button. (A one-time payment unlocks unlimited access).</li>
                 <li>Your converted files will be bundled into a ZIP for easy download.</li>
             </ol>
-            <p><em>Keywords: batch image converter, convert multiple files to pdf, online png to jpg batch, webp converter bulk, unlimited file conversion, secure file converter online.</em></p>
+            <p class="keywords-list"><em>Keywords: batch image converter, convert multiple files to pdf, online png to jpg batch, webp converter bulk, unlimited file conversion, secure file converter online.</em></p>
         </div>
     </div> <!-- End .page-wrapper -->
 
@@ -462,9 +507,6 @@
             }
         }
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize payment modal JS variable after DOM is loaded
-            // paymentModal = document.getElementById('paymentModal'); // Already global
-            // fileListHeader = document.getElementById('fileListHeader'); // Already global
             checkPaymentStatus();
         });
         window.addEventListener('pageshow', (event) => { if (event.persisted) { checkPaymentStatus(); } });
