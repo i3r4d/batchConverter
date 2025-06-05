@@ -1,0 +1,15 @@
+{
+  "name": "batchconverter",
+  "version": "1.0.0",
+  "description": "Fast unlimited batch file converter tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "stripe": "^18.2.1"
+  }
+}

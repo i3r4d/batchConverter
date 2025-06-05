@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Convert Files - Unlimited File Converter Online</title>
+    <meta name="description" content="Convert multiple files at once. Fast, unlimited batch file converter for PDF, images, documents, and more. No limits, no waiting.">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #4facfe;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #00f2fe;
+            background: rgba(79, 172, 254, 0.05);
+        }
+        
+        .upload-area.dragover {
+            border-color: #00f2fe;
+            background: rgba(79, 172, 254, 0.1);
+        }
+        
+        .upload-icon {
+            font-size: 3em;
+            color: #4facfe;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            color: #666;
+            font-size: 1em;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .format-selector {
+            margin-bottom: 30px;
+        }
+        
+        .format-selector label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .format-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+        }
+        
+        .format-select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+        
+        .file-list {
+            margin-bottom: 30px;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .file-size {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .remove-file {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        
+        .remove-file:hover {
+            background: #ff3838;
+        }
+        
+        .convert-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .convert-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        
+        .payment-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .payment-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .price {
+            font-size: 2.5em;
+            color: #4facfe;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .price-subtext {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .pay-btn {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+        
+        .pay-btn:hover {
+            background: #218838;
+        }
+         .pay-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .close-modal {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .features {
+            background: #f8f9fa;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .features h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .feature-icon {
+            font-size: 2em;
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .feature p {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head><body>
+    <div class="container">
+        <div class="header">
+            <h1>BatchConvert Pro</h1>
+            <p>Convert Multiple Files Instantly - No Limits, No Waiting</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">Drop files here or click to browse</div>
+                <div class="upload-subtext">Support for PDF, JPG, PNG, DOCX, MP4, and 20+ more formats</div>
+            </div>
+            
+            <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.docx,.doc,.txt,.mp4,.avi,.mov,.zip,.rar">
+            
+            <div class="format-selector">
+                <label for="outputFormat">Convert to:</label>
+                <select id="outputFormat" class="format-select">
+                    <option value="">Select output format</option>
+                    <option value="pdf">PDF</option>
+                    <option value="jpg">JPG</option>
+                    <option value="png">PNG</option>
+                    <option value="gif">GIF</option>
+                    <option value="docx">DOCX</option>
+                    <option value="txt">TXT</option>
+                    <option value="mp4">MP4</option>
+                    <option value="avi">AVI</option>
+                    <option value="zip">ZIP</option>
+                </select>
+            </div>
+            
+            <div class="file-list" id="fileList"></div>
+            
+            <button class="convert-btn" id="convertBtn" onclick="showPayment()">
+                Convert Files ($12.99 - Unlimited Forever)
+            </button>
+        </div>
+        
+        <div class="features">
+            <h2>Why Choose BatchConvert Pro?</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Convert hundreds of files in seconds, not minutes</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔄</div>
+                    <h3>20+ Formats</h3>
+                    <p>PDF, Images, Documents, Videos, Archives - we support them all</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Secure</h3>
+                    <p>Your files are processed securely and deleted after conversion</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">♾️</div>
+                    <h3>No Limits</h3>
+                    <p>Unlimited files, unlimited conversions, forever</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="payment-modal" id="paymentModal">
+        <div class="payment-content">
+            <h2 class="payment-title">Unlock Unlimited Conversions</h2>
+            <div class="price">$12.99</div>
+            <div class="price-subtext">One-time payment • Lifetime access • No monthly fees</div>
+            <button class="pay-btn" onclick="processPayment()">Pay Now & Start Converting</button>
+            <button class="close-modal" onclick="closePayment()">Maybe Later</button>
+        </div>
+    </div>
+
+    <!-- SEO Content Section -->
+    <div style="background: white; padding: 40px; max-width: 800px; margin: 0 auto;">
+        <h2>Free Batch File Converter - Convert Multiple Files Online</h2>
+        <p>Need to convert multiple files at once? Our batch file converter handles unlimited file conversions in seconds. Convert PDF to JPG, PNG to PDF, DOCX to TXT, and over 20 file formats instantly.</p>
+        
+        <h3>Supported File Formats</h3>
+        <p>Convert between PDF, JPG, JPEG, PNG, GIF, DOCX, DOC, TXT, MP4, AVI, MOV, ZIP, RAR, and many more formats. Our converter supports batch processing for images, documents, videos, and archives.</p>
+        
+        <h3>Why Use Our Batch Converter?</h3>
+        <p>Unlike other online converters with file limits and watermarks, our tool offers unlimited conversions with no restrictions. Convert hundreds of files simultaneously without quality loss or file size limits.</p>
+        
+        <h3>How to Convert Multiple Files</h3>
+        <p>Simply drag and drop your files, select your desired output format, and click convert. Our batch file converter processes all files simultaneously, saving you hours of manual work.</p>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        
+        // File input handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            handleFiles(e.target.files);
+        });
+        
+        // Drag and drop
+        const uploadArea = document.querySelector('.upload-area');
+        
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        function handleFiles(files) {
+            for (let file of files) {
+                selectedFiles.push(file);
+            }
+            updateFileList();
+        }
+        
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span class="file-name">${file.name}</span>
+                    <span class="file-size">${formatFileSize(file.size)}</span>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function showPayment() {
+            if (selectedFiles.length === 0) {
+                alert('Please select files to convert first!');
+                return;
+            }
+            
+            const outputFormat = document.getElementById('outputFormat').value;
+            if (!outputFormat) {
+                alert('Please select an output format!');
+                return;
+            }
+            
+            document.getElementById('paymentModal').style.display = 'block';
+        }
+        
+        function closePayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+            // Re-enable pay button if modal is closed without payment attempt or after failure
+            const payButton = document.querySelector('.pay-btn');
+            if (payButton) {
+                payButton.disabled = false;
+                payButton.textContent = 'Pay Now & Start Converting';
+            }
+        }
+        
+        function processPayment() {
+            const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd'); 
+
+            const payButton = document.querySelector('.pay-btn');
+            if (payButton) {
+                payButton.disabled = true;
+                payButton.textContent = 'Processing...';
+            }
+
+            fetch('/create-checkout-session', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(errData => {
+                        throw new Error(errData.error || `Server error: ${response.status}`);
+                    }).catch(() => {
+                        throw new Error(`Server error: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(session => {
+                return stripe.redirectToCheckout({ sessionId: session.id });
+            })
+            .then(result => {
+                if (result.error) {
+                    alert(result.error.message); 
+                    if (payButton) { 
+                        payButton.disabled = false;
+                        payButton.textContent = 'Pay Now & Start Converting';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error in processPayment:', error);
+                alert('Payment processing failed: ' + error.message); 
+                if (payButton) { 
+                    payButton.disabled = false;
+                    payButton.textContent = 'Pay Now & Start Converting';
+                }
+            });
+        }
+        
+        function enableUnlimitedAccess() {
+            // This function will eventually be triggered after successful payment confirmation (e.g., via webhook or success page)
+            document.getElementById('convertBtn').innerHTML = 'Convert Files Now (Unlimited Access)';
+            document.getElementById('convertBtn').onclick = function() {
+                if (selectedFiles.length === 0) {
+                    alert('Please select files to convert first!');
+                    return;
+                }
+                const outputFormat = document.getElementById('outputFormat').value;
+                if (!outputFormat) {
+                    alert('Please select an output format!');
+                    return;
+                }
+                // Placeholder for actual conversion logic
+                alert('File conversion feature will be fully implemented after successful payment confirmation and backend setup for conversion.');
+                // Here you would trigger the actual file conversion process.
+            };
+        }
+    </script>
+</body>
+</html>
