@@ -1,0 +1,8 @@
+# Dependencies
+/node_modules
+
+# macOS
+.DS_Store
+
+# Optional: Environment variables file if you ever create one locally (e.g. .env)
+# .env
