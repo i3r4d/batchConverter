@@ -12,42 +12,56 @@ exports.handler = async (event, context) => {
             return { statusCode: 400, body: JSON.stringify({ error: 'Missing image data or output format.' }) };
         }
 
-        // Remove data URL prefix if present (e.g., "data:image/jpeg;base64,")
         const base64Data = imageBase64.split(';base64,').pop();
         const imageBuffer = Buffer.from(base64Data, 'base64');
 
         let convertedBuffer;
         let mimeType;
-        let newFileName = (inputFileName || 'converted_image').replace(/\.[^/.]+$/, "") + `.${outputFormat.toLowerCase()}`;
+        // Ensure newFileName is constructed *after* knowing the actual output format extension
+        const originalNameWithoutExtension = (inputFileName || 'converted_image').replace(/\.[^/.]+$/, "");
+        let newFileName;
 
+        const targetFormat = outputFormat.toLowerCase();
 
-        if (outputFormat.toLowerCase() === 'png') {
+        if (targetFormat === 'png') {
             convertedBuffer = await sharp(imageBuffer).png().toBuffer();
             mimeType = 'image/png';
-        } else if (outputFormat.toLowerCase() === 'jpeg' || outputFormat.toLowerCase() === 'jpg') {
+            newFileName = `${originalNameWithoutExtension}.png`;
+        } else if (targetFormat === 'jpeg' || targetFormat === 'jpg') {
             convertedBuffer = await sharp(imageBuffer).jpeg().toBuffer();
             mimeType = 'image/jpeg';
+            newFileName = `${originalNameWithoutExtension}.${targetFormat === 'jpeg' ? 'jpeg' : 'jpg'}`;
+        } else if (targetFormat === 'webp') {
+            convertedBuffer = await sharp(imageBuffer).webp().toBuffer();
+            mimeType = 'image/webp';
+            newFileName = `${originalNameWithoutExtension}.webp`;
+        } else if (targetFormat === 'gif') { // Note: Sharp's GIF output might be static from animated inputs
+            convertedBuffer = await sharp(imageBuffer).gif().toBuffer();
+            mimeType = 'image/gif';
+            newFileName = `${originalNameWithoutExtension}.gif`;
+        } else if (targetFormat === 'tiff') {
+            convertedBuffer = await sharp(imageBuffer).tiff().toBuffer();
+            mimeType = 'image/tiff';
+            newFileName = `${originalNameWithoutExtension}.tiff`;
+        } else if (targetFormat === 'pdf') { // Added PDF output
+            convertedBuffer = await sharp(imageBuffer).pdf().toBuffer();
+            mimeType = 'application/pdf';
+            newFileName = `${originalNameWithoutExtension}.pdf`;
         } else {
-            return { statusCode: 400, body: JSON.stringify({ error: 'Unsupported output format for images.' }) };
+            return { statusCode: 400, body: JSON.stringify({ error: `Unsupported output image format: ${outputFormat}` }) };
         }
-
-        const convertedBase64 = convertedBuffer.toString('base64');
 
         return {
             statusCode: 200,
             body: JSON.stringify({
                 fileName: newFileName,
                 mimeType: mimeType,
-                data: convertedBase64 // Sending full base64 back, careful with size limits
+                data: convertedBuffer.toString('base64')
             }),
-            // For binary response (alternative, more complex to handle on client with fetch for multiple files)
-            // headers: { 'Content-Type': mimeType, 'Content-Disposition': `attachment; filename="${newFileName}"` },
-            // body: convertedBuffer.toString('base64'), // Netlify Functions expect string body
-            // isBase64Encoded: true,
         };
 
     } catch (error) {
-        console.error('Conversion error:', error);
+        console.error('Image conversion error in function:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: 'Image conversion failed: ' + error.message }),

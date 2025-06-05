@@ -148,7 +148,7 @@
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 0.8em; /* Corrected typo: font-size */
+            font-size: 0.8em;
         }
         
         .remove-file:hover {
@@ -309,24 +309,32 @@
             <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                 <div class="upload-icon">📁</div>
                 <div class="upload-text">Drop files here or click to browse</div>
-                <div class="upload-subtext">Support for PDF, JPG, PNG, DOCX, MP4, and 20+ more formats</div>
+                <div class="upload-subtext">Support for PDF, JPG, PNG, GIF, WebP, TIFF & more</div>
             </div>
             
-            <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.docx,.doc,.txt,.mp4,.avi,.mov,.zip,.rar">
+            <input type="file" id="fileInput" class="file-input" multiple 
+                   accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.tiff,.txt,.md,.csv,.json,.zip">
             
             <div class="format-selector">
                 <label for="outputFormat">Convert to:</label>
                 <select id="outputFormat" class="format-select">
                     <option value="">Select output format</option>
-                    <option value="pdf">PDF</option>
-                    <option value="jpg">JPG</option>
-                    <option value="png">PNG</option>
-                    <option value="gif">GIF</option>
-                    <option value="docx">DOCX</option>
-                    <option value="txt">TXT</option>
-                    <option value="mp4">MP4</option>
-                    <option value="avi">AVI</option>
-                    <option value="zip">ZIP</option>
+                    <optgroup label="Images">
+                        <option value="jpg">JPG</option>
+                        <option value="png">PNG</option>
+                        <option value="gif">GIF</option>
+                        <option value="webp">WebP</option>
+                        <option value="tiff">TIFF</option>
+                    </optgroup>
+                    <optgroup label="Documents">
+                        <option value="pdf">PDF (from Image)</option>
+                        <!-- <option value="pdf-merge">PDF (Merge multiple PDFs)</option> -->
+                        <!-- <option value="txt">TXT</option> -->
+                    </optgroup>
+                    <!-- <optgroup label="Archives">
+                        <option value="zip">ZIP</option>
+                    </optgroup> -->
+                    <!-- Add more formats as you support them -->
                 </select>
             </div>
             
@@ -347,8 +355,8 @@
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🔄</div>
-                    <h3>20+ Formats</h3>
-                    <p>PDF, Images, Documents, Videos, Archives - we support them all</p>
+                    <h3>Many Formats</h3>
+                    <p>Images, basic PDFs - we support them. More coming!</p>
                 </div>
                 <div class="feature">
                     <div class="feature-icon">🔒</div>
@@ -391,31 +399,23 @@
 
     <script>
         let selectedFiles = [];
-        const convertBtn = document.getElementById('convertBtn'); // Get button once at the top
+        const convertBtn = document.getElementById('convertBtn'); 
         
         document.getElementById('fileInput').addEventListener('change', function(e) {
             handleFiles(e.target.files);
         });
         
         const uploadArea = document.querySelector('.upload-area');
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-        });
-        uploadArea.addEventListener('drop', function(e) {
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
+        uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
             handleFiles(e.dataTransfer.files);
         });
         
         function handleFiles(files) {
-            for (let file of files) {
-                selectedFiles.push(file);
-            }
+            for (let file of files) { selectedFiles.push(file); }
             updateFileList();
         }
         
@@ -448,160 +448,127 @@
         }
         
         function showPayment() {
-            if (selectedFiles.length === 0) {
-                alert('Please select files to convert first!');
-                return;
-            }
+            if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; }
             const outputFormat = document.getElementById('outputFormat').value;
-            if (!outputFormat) {
-                alert('Please select an output format!');
-                return;
-            }
+            if (!outputFormat) { alert('Please select an output format!'); return; }
             document.getElementById('paymentModal').style.display = 'block';
         }
         
         function closePayment() {
             document.getElementById('paymentModal').style.display = 'none';
             const payButton = document.querySelector('.pay-btn');
-            if (payButton) {
-                payButton.disabled = false;
-                payButton.textContent = 'Pay Now & Start Converting';
-            }
+            if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; }
         }
         
         function processPayment() {
-            const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd'); // Your TEST publishable key
+            const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd');
             const payButton = document.querySelector('.pay-btn');
-            if (payButton) {
-                payButton.disabled = true;
-                payButton.textContent = 'Processing...';
-            }
-            fetch('/create-checkout-session', { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            })
+            if (payButton) { payButton.disabled = true; payButton.textContent = 'Processing...'; }
+            fetch('/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }})
             .then(response => {
-                if (!response.ok) {
-                    return response.json().then(errData => { throw new Error(errData.error || `Server error: ${response.status}`); })
-                                     .catch(() => { throw new Error(`Server error: ${response.status}`); });
-                }
+                if (!response.ok) { return response.json().then(errData => { throw new Error(errData.error || `Server error: ${response.status}`); }).catch(() => { throw new Error(`Server error: ${response.status}`); }); }
                 return response.json();
             })
             .then(session => stripe.redirectToCheckout({ sessionId: session.id }))
             .then(result => {
-                if (result && result.error) { 
-                    console.error('Stripe redirectToCheckout error:', result.error.message);
-                    alert('Could not redirect to Stripe: ' + result.error.message);
-                    if (payButton) { 
-                        payButton.disabled = false;
-                        payButton.textContent = 'Pay Now & Start Converting';
-                    }
-                }
+                if (result && result.error) { console.error('Stripe redirectToCheckout error:', result.error.message); alert('Could not redirect to Stripe: ' + result.error.message); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; }}
             })
-            .catch(error => {
-                console.error('Error in processPayment:', error);
-                alert('Payment processing failed: ' + error.message); 
-                if (payButton) { 
-                    payButton.disabled = false;
-                    payButton.textContent = 'Pay Now & Start Converting';
-                }
-            });
+            .catch(error => { console.error('Error in processPayment:', error); alert('Payment processing failed: ' + error.message); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; }});
+        }
+
+        async function callImageConversionFunction(file, outputFormat) {
+            if (!convertBtn) return;
+            convertBtn.disabled = true;
+            convertBtn.innerHTML = 'Converting...';
+            // console.log(`Attempting to convert ${file.name} to ${outputFormat}`); // Optional debug
+
+            try {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                
+                reader.onloadend = async function() {
+                    const imageBase64 = reader.result;
+                    try {
+                        const response = await fetch('/convert-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                imageBase64: imageBase64,
+                                outputFormat: outputFormat,
+                                inputFileName: file.name
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errData = await response.json().catch(() => ({ error: "Failed to parse error response from server." }));
+                            throw new Error(errData.error || `Conversion server error: ${response.status}`);
+                        }
+
+                        const result = await response.json();
+                        const link = document.createElement('a');
+                        link.href = `data:${result.mimeType};base64,${result.data}`;
+                        link.download = result.fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        alert(`${result.fileName} converted and download started!`);
+                    } catch (fetchError) {
+                        console.error('Error during image conversion fetch or result processing:', fetchError);
+                        alert('Image conversion failed: ' + fetchError.message);
+                    } finally {
+                        convertBtn.disabled = false;
+                        checkPaymentStatus(); // Reset button based on payment status
+                    }
+                };
+                reader.onerror = function(error) {
+                    console.error("FileReader error:", error);
+                    alert('Failed to read file for conversion.');
+                    convertBtn.disabled = false;
+                    checkPaymentStatus();
+                };
+            } catch (outerError) {
+                console.error('Outer error in callImageConversionFunction:', outerError);
+                alert('Image conversion setup failed: ' + outerError.message);
+                convertBtn.disabled = false;
+                checkPaymentStatus();
+            }
         }
 
         async function handlePaidConversion() {
-            if (!convertBtn) return; 
-
-            if (selectedFiles.length === 0) {
-                alert('Please select files to convert first!');
-                return;
-            }
+            if (!convertBtn) return;
+            if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; }
+            
             const outputFormatValue = document.getElementById('outputFormat').value;
-            if (!outputFormatValue) {
-                alert('Please select an output format!');
-                return;
-            }
+            if (!outputFormatValue) { alert('Please select an output format!'); return; }
 
+            // --- For now, we only process ONE file for simplicity ---
+            // --- Batch processing loop will be added later ---
             const fileToConvert = selectedFiles[0]; 
-            if (!fileToConvert) { // Should be caught by selectedFiles.length === 0, but good extra check
-                alert("No file found in selection for conversion.");
-                return;
-            }
+            if (!fileToConvert) { alert("No file found in selection for conversion."); return; }
 
-            const supportedInputImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            const supportedOutputImageFormats = ['png', 'jpg', 'jpeg']; 
+            const inputFileType = fileToConvert.type.toLowerCase();
+            const targetFormat = outputFormatValue.toLowerCase();
 
-            console.log("Attempting conversion. File type:", fileToConvert.type.toLowerCase(), "Output format:", outputFormatValue.toLowerCase()); // Debug log
+            console.log("Routing conversion. File type:", inputFileType, "Target format:", targetFormat);
 
-            if (supportedInputImageTypes.includes(fileToConvert.type.toLowerCase()) && 
-                supportedOutputImageFormats.includes(outputFormatValue.toLowerCase())) {
-                
-                convertBtn.disabled = true;
-                convertBtn.innerHTML = 'Converting...';
-                // alert(`Converting ${fileToConvert.name} to ${outputFormatValue}... this might take a moment.`); // Optional intermediate alert
+            // Define supported conversions for the /convert-image endpoint
+            const imageInputTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/tiff', 'image/svg+xml'];
+            const imageOutputTargetsForImageFunction = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff', 'pdf']; // pdf is from image
 
-                try {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(fileToConvert); 
-                    
-                    reader.onloadend = async function() { 
-                        const imageBase64 = reader.result;
-                        try { 
-                            const response = await fetch('/convert-image', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    imageBase64: imageBase64,
-                                    outputFormat: outputFormatValue,
-                                    inputFileName: fileToConvert.name
-                                })
-                            });
-
-                            if (!response.ok) {
-                                const errData = await response.json().catch(() => ({ error: "Failed to parse error response from server."}));
-                                throw new Error(errData.error || `Conversion server error: ${response.status}`);
-                            }
-
-                            const result = await response.json();
-
-                            const link = document.createElement('a');
-                            link.href = `data:${result.mimeType};base64,${result.data}`;
-                            link.download = result.fileName;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-
-                            alert(`${result.fileName} converted and download started!`);
-                        } catch (fetchError) { 
-                             console.error('Error during image conversion fetch or result processing:', fetchError);
-                             alert('Image conversion failed: ' + fetchError.message);
-                        } finally {
-                            convertBtn.disabled = false;
-                            checkPaymentStatus(); 
-                        }
-                    };
-                    reader.onerror = function(error) {
-                        console.error("FileReader error:", error);
-                        alert('Failed to read file for conversion.');
-                        convertBtn.disabled = false;
-                        checkPaymentStatus(); 
-                    };
-                } catch (outerError) { 
-                    console.error('Outer error in handlePaidConversion:', outerError);
-                    alert('Image conversion setup failed: ' + outerError.message);
-                    convertBtn.disabled = false;
-                    checkPaymentStatus(); 
-                }
-            } else {
-                alert(`This demo currently only supports converting selected JPG/PNG/GIF images to JPG/PNG. You selected: ${fileToConvert.name} (${fileToConvert.type}) to ${outputFormatValue}.`);
+            if (imageInputTypes.includes(inputFileType) && imageOutputTargetsForImageFunction.includes(targetFormat)) {
+                await callImageConversionFunction(fileToConvert, targetFormat);
+            } 
+            // --- Add more 'else if' blocks here for other function routes ---
+            // else if (/* condition for PDF merging, e.g., multiple PDFs selected and target is 'pdf-merge' */) {
+            //    await callPdfMergeFunction(selectedFiles, targetFormat /* or specific operation */);
+            // }
+            else {
+                alert(`Conversion from ${fileToConvert.name} (${inputFileType}) to ${targetFormat} is not yet supported by this demo.`);
             }
         }
 
         function checkPaymentStatus() {
-            if (!convertBtn) { // Should not happen if convertBtn is fetched at the top
-                console.error("Convert button not found in checkPaymentStatus");
-                return;
-            }
-
+            if (!convertBtn) { console.error("Convert button not found in checkPaymentStatus"); return; }
             if (localStorage.getItem('hasPaidForBatchConvertPro') === 'true') {
                 convertBtn.innerHTML = 'Convert Files Now (Unlimited Access)';
                 convertBtn.onclick = handlePaidConversion; 
@@ -611,15 +578,8 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            checkPaymentStatus();
-        });
-
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                checkPaymentStatus();
-            }
-        });
+        document.addEventListener('DOMContentLoaded', checkPaymentStatus);
+        window.addEventListener('pageshow', (event) => { if (event.persisted) { checkPaymentStatus(); } });
     </script>
 </body>
 </html>
