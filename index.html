@@ -6,8 +6,14 @@
     <title>Batch Convert Files - Unlimited File Converter Online</title>
     <meta name="description" content="Convert multiple files at once. Fast, unlimited batch file converter for PDF, images, documents, and more. No limits, no waiting.">
     <script src="https://js.stripe.com/v3/"></script>
+    <!-- Include JSZip from a CDN for simplicity without a build step -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver.js from CDN for saveAs function -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         /* ... (your existing CSS styles remain the same) ... */
+        /* Styles from previous version */
         * {
             margin: 0;
             padding: 0;
@@ -290,7 +296,6 @@
             font-size: 0.9em;
         }
 
-        /* SEO Content Section Styles */
         .seo-content-section {
             background: white;
             padding: 40px;
@@ -299,7 +304,8 @@
             border-radius: 15px;
         }
     </style>
-</head><body>
+</head>
+<body>
     <div class="container">
         <!-- ... (header and other HTML unchanged) ... -->
         <div class="header">
@@ -330,7 +336,6 @@
                     </optgroup>
                     <optgroup label="Documents">
                         <option value="pdf">PDF (from Image)</option>
-                        <!-- Add other document options later -->
                     </optgroup>
                 </select>
             </div>
@@ -391,17 +396,19 @@
     </div>
 
     <script>
+        // Ensure JSZip and FileSaver are loaded from CDN before this script runs
+        // or handle their absence gracefully.
+
         let selectedFiles = [];
         const convertBtn = document.getElementById('convertBtn'); 
         
-        // --- File Handling and UI (unchanged) ---
         document.getElementById('fileInput').addEventListener('change', function(e) { handleFiles(e.target.files); });
         const uploadArea = document.querySelector('.upload-area');
         uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
         uploadArea.addEventListener('dragleave', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); });
         uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
         function handleFiles(files) { for (let file of files) { selectedFiles.push(file); } updateFileList(); }
-        function updateFileList() { /* ... unchanged ... */ 
+        function updateFileList() { 
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = '';
             selectedFiles.forEach((file, index) => {
@@ -418,21 +425,10 @@
         function removeFile(index) { selectedFiles.splice(index, 1); updateFileList(); }
         function formatFileSize(bytes) { if (bytes === 0) return '0 Bytes'; const k = 1024; const sizes = ['Bytes', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; }
         
-        // --- Payment Modal Logic (unchanged) ---
-        function showPayment() { /* ... unchanged ... */ 
-            if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; } 
-            const outputFormat = document.getElementById('outputFormat').value; 
-            if (!outputFormat) { alert('Please select an output format!'); return; } 
-            document.getElementById('paymentModal').style.display = 'block'; 
-        }
-        function closePayment() { /* ... unchanged ... */ 
-            document.getElementById('paymentModal').style.display = 'none'; 
-            const payButton = document.querySelector('.pay-btn'); 
-            if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; } 
-        }
+        function showPayment() { if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; } const outputFormat = document.getElementById('outputFormat').value; if (!outputFormat) { alert('Please select an output format!'); return; } document.getElementById('paymentModal').style.display = 'block'; }
+        function closePayment() { document.getElementById('paymentModal').style.display = 'none'; const payButton = document.querySelector('.pay-btn'); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; } }
         
-        // --- Stripe Payment Processing (unchanged) ---
-        function processPayment() { /* ... unchanged ... */ 
+        function processPayment() {
             const stripe = Stripe('pk_test_51RWdDYG7Nhle0D1Q16kgmnfcDyGFrOwkh5oeO0X5YfnfHLkWinieJ8vFHqUC6SkXeG5GQgG0pSM91CJ2cq5ZaXa4003LfaYsDd');
             const payButton = document.querySelector('.pay-btn');
             if (payButton) { payButton.disabled = true; payButton.textContent = 'Processing...'; }
@@ -443,7 +439,6 @@
             .catch(error => { console.error('Error in processPayment:', error); alert('Payment processing failed: ' + error.message); if (payButton) { payButton.disabled = false; payButton.textContent = 'Pay Now & Start Converting'; }});
         }
 
-        // --- Helper: Promisified FileReader ---
         function readFileAsBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -453,10 +448,7 @@
             });
         }
 
-        // --- Helper function for Image-to-Image Conversion (single file) ---
         async function processSingleImageConversion(file, outputFormat) {
-            // This function is for /convert-image (sharp based image-to-image)
-            // It returns a promise that resolves with success/failure for one file
             try {
                 const imageBase64 = await readFileAsBase64(file);
                 const response = await fetch('/convert-image', { 
@@ -469,23 +461,15 @@
                     throw new Error(errData.error || `Image conversion error for ${file.name}: ${response.status}`); 
                 }
                 const result = await response.json();
-                const link = document.createElement('a');
-                link.href = `data:${result.mimeType};base64,${result.data}`;
-                link.download = result.fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                return { status: 'fulfilled', fileName: result.fileName }; // Indicate success
+                // Instead of direct download, return the data for zipping
+                return { status: 'fulfilled', fileName: result.fileName, mimeType: result.mimeType, data: result.data };
             } catch (error) {
                 console.error(`Error converting ${file.name} to ${outputFormat}:`, error);
-                return { status: 'rejected', fileName: file.name, reason: error.message }; // Indicate failure
+                return { status: 'rejected', originalFileName: file.name, reason: error.message };
             }
         }
 
-        // --- Helper function for Image-to-PDF Conversion (single file) ---
         async function processSingleImageToPdfConversion(file) {
-            // This function is for /image-to-pdf (sharp + pdf-lib based)
-            // It returns a promise that resolves with success/failure for one file
             try {
                 const imageBase64 = await readFileAsBase64(file);
                 const response = await fetch('/image-to-pdf', { 
@@ -498,20 +482,14 @@
                     throw new Error(errData.error || `Image-to-PDF conversion error for ${file.name}: ${response.status}`); 
                 }
                 const result = await response.json();
-                const link = document.createElement('a');
-                link.href = `data:${result.mimeType};base64,${result.data}`;
-                link.download = result.fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                return { status: 'fulfilled', fileName: result.fileName }; // Indicate success
+                // Instead of direct download, return the data for zipping
+                return { status: 'fulfilled', fileName: result.fileName, mimeType: result.mimeType, data: result.data };
             } catch (error) {
                 console.error(`Error converting ${file.name} to PDF:`, error);
-                return { status: 'rejected', fileName: file.name, reason: error.message }; // Indicate failure
+                return { status: 'rejected', originalFileName: file.name, reason: error.message };
             }
         }
 
-        // --- Main Conversion Router - NOW HANDLES BATCH ---
         async function handlePaidConversion() {
             if (!convertBtn) return;
             if (selectedFiles.length === 0) { alert('Please select files to convert first!'); return; }
@@ -524,27 +502,23 @@
 
             const conversionPromises = [];
             const targetFormat = outputFormatValue.toLowerCase();
+            const successfullyConvertedFilesData = []; // To store data for zipping
 
             const imageInputTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/tiff', 'image/svg+xml'];
             const imageOutputTargetsForImageFunction = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'tiff']; 
 
             for (const fileToConvert of selectedFiles) {
                 const inputFileType = fileToConvert.type.toLowerCase();
-                console.log(`Processing ${fileToConvert.name}. Input:`, inputFileType, "Target:", targetFormat);
-
                 if (imageInputTypes.includes(inputFileType)) {
                     if (imageOutputTargetsForImageFunction.includes(targetFormat)) {
                         conversionPromises.push(processSingleImageConversion(fileToConvert, targetFormat));
                     } else if (targetFormat === 'pdf') {
                         conversionPromises.push(processSingleImageToPdfConversion(fileToConvert));
                     } else {
-                        // Log unsupported but add a "failed" promise to keep array consistent for Promise.allSettled
-                        console.warn(`Unsupported output format '${targetFormat}' for image input '${fileToConvert.name}'.`);
-                        conversionPromises.push(Promise.resolve({status: 'rejected', fileName: fileToConvert.name, reason: `Unsupported output '${targetFormat}' for this image.`}));
+                        conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported output '${targetFormat}' for this image.`}));
                     }
                 } else {
-                    console.warn(`Conversion from file type '${inputFileType}' (${fileToConvert.name}) to '${targetFormat}' is not yet supported.`);
-                    conversionPromises.push(Promise.resolve({status: 'rejected', fileName: fileToConvert.name, reason: `Unsupported input type '${inputFileType}'.`}));
+                    conversionPromises.push(Promise.resolve({status: 'rejected', originalFileName: fileToConvert.name, reason: `Unsupported input type '${inputFileType}'.`}));
                 }
             }
 
@@ -552,35 +526,76 @@
             
             let successCount = 0;
             let failCount = 0;
-            let messages = [];
+            let batchSummaryMessages = [];
 
             results.forEach(result => {
                 if (result.status === 'fulfilled' && result.value.status === 'fulfilled') {
                     successCount++;
-                    messages.push(`${result.value.fileName} converted successfully.`);
+                    successfullyConvertedFilesData.push(result.value); // Store {fileName, mimeType, data}
                 } else {
                     failCount++;
-                    // result.value will exist if our function resolved with a status: 'rejected'
-                    // result.reason will exist if the promise itself was rejected (e.g. network error before function call)
-                    const fileName = result.value?.fileName || (result.reason?.fileName || 'Unknown file');
+                    const fileName = result.value?.originalFileName || (result.reason?.originalFileName || 'Unknown file');
                     const reason = result.value?.reason || result.reason?.message || 'Unknown error';
-                    messages.push(`Failed to convert ${fileName}: ${reason}`);
+                    batchSummaryMessages.push(`Failed: ${fileName} - ${reason}`);
                     console.error(`Failed conversion for ${fileName}: ${reason}`, result);
                 }
             });
 
-            if (messages.length > 0) {
-                alert(`Batch Conversion Complete:\nSuccessful: ${successCount}\nFailed: ${failCount}\n\nDetails:\n${messages.join('\n')}`);
-            } else {
-                alert("No files were processed. Please check selection and formats.");
+            if (successfullyConvertedFilesData.length > 0) {
+                if (typeof JSZip === "undefined" || typeof saveAs === "undefined") {
+                    alert("Error: JSZip or FileSaver library not loaded. Cannot create ZIP. Individual downloads not implemented as fallback yet.");
+                    successfullyConvertedFilesData.forEach(fileData => { // Fallback to individual if JSZip fails to load
+                        const link = document.createElement('a');
+                        link.href = `data:${fileData.mimeType};base64,${fileData.data}`;
+                        link.download = fileData.fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        batchSummaryMessages.push(`Downloaded ${fileData.fileName} individually (ZIP creation failed).`);
+                    });
+
+                } else {
+                    const zip = new JSZip();
+                    successfullyConvertedFilesData.forEach(fileData => {
+                        // JSZip expects the actual binary data, not the base64 string directly for {base64: true} unless it's a base64 *string*
+                        // The 'data' is already a base64 string from our functions
+                        zip.file(fileData.fileName, fileData.data, { base64: true });
+                    });
+                    
+                    try {
+                        const zipBlob = await zip.generateAsync({ type: "blob" });
+                        saveAs(zipBlob, "converted_files.zip"); // From FileSaver.js
+                        batchSummaryMessages.unshift(`${successCount} file(s) converted and zipped successfully!`);
+                    } catch (zipError) {
+                        console.error("Error generating ZIP:", zipError);
+                        batchSummaryMessages.unshift("Error creating ZIP file. Individual downloads attempted instead.");
+                        // Fallback to individual downloads if zipping fails
+                        successfullyConvertedFilesData.forEach(fileData => {
+                             const link = document.createElement('a');
+                            link.href = `data:${fileData.mimeType};base64,${fileData.data}`;
+                            link.download = fileData.fileName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        });
+                    }
+                }
+            }
+            
+            if (batchSummaryMessages.length > 0) {
+                 alert(`Batch Conversion Summary:\n${batchSummaryMessages.join('\n')}`);
+            } else if (failCount > 0 && successCount === 0) {
+                 alert(`All ${failCount} file(s) failed to convert.`);
+            } else if (successCount === 0 && failCount === 0) {
+                alert("No files were processed or eligible for conversion.");
             }
 
+
             convertBtn.disabled = false;
-            checkPaymentStatus(); // Reset button text and state
+            checkPaymentStatus();
         }
 
-        // --- Payment Status Check and UI Update (unchanged) ---
-        function checkPaymentStatus() { /* ... unchanged ... */ 
+        function checkPaymentStatus() { 
             if (!convertBtn) { console.error("Convert button not found!"); return; }
             if (localStorage.getItem('hasPaidForBatchConvertPro') === 'true') {
                 convertBtn.innerHTML = 'Convert Files Now (Unlimited Access)';
